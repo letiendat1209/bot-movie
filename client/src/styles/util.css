@@ -1,0 +1,8 @@
+/* src/styles/utilities.css */
+.text-highlight {
+  @apply text-yellow-500 font-bold;
+}
+
+.bg-gradient-custom {
+  background-image: linear-gradient(to right, #ff7e5f, #feb47b);
+}

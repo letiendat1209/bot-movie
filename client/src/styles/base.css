@@ -1,0 +1,26 @@
+/* src/styles/base.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-color: rgb(243 244 246);
+  --text-color: rgb(9 9 11);
+  --btn-color: #00bcd4;
+}
+
+.dark {
+  --bg-color: rgb(0, 0, 0);
+  --text-color: rgb(250 250 250);
+  --btn-color: #00bcd4; /* hoặc tùy chỉnh thêm */
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+button {
+  background-color: var(--btn-color);
+  color: var(--text-color);
+}
