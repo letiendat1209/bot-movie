@@ -28,7 +28,7 @@ function Header() {
 
   return (
     <header className="bg-transparent text-white fixed top-0 left-0 w-full z-50 shadow-lg backdrop-blur-sm">
-      <div className="container mx-auto px-[40px]  py-2 flex items-center justify-between">
+      <div className="container mx-auto px-[40px] gap-2 py-2 flex items-center justify-between">
         {/* Mobile Menu Button */}
         <div className="md:hidden">
           <button
@@ -41,35 +41,35 @@ function Header() {
         {/* Logo */}
         <div className="flex items-center space-x-2">
           <Link to="/">
-            <h1 className="text-cyan-200 font-bold text-lg md:text-xl">
+            <h1 className="text-cyan-200 font-bold text-lg md:text-xl whitespace-nowrap">
               BỘT PHIM
             </h1>
           </Link>
         </div>
 
         {/* Menu Items for larger screens */}
-        <nav className="hidden md:flex space-x-4">
+        <nav className="hidden md:flex gap-2">
           <a
             href="#"
-            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 "
+            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 whitespace-nowrap"
           >
             Anime
           </a>
           <a
             href="#"
-            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 "
+            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 whitespace-nowrap"
           >
             Movie
           </a>
           <a
             href="#"
-            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 "
+            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 whitespace-nowrap"
           >
             English 1-1
           </a>
           <a
             href="#"
-            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 "
+            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 whitespace-nowrap"
           >
             BXH
           </a>

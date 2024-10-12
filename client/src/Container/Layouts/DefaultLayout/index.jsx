@@ -6,9 +6,7 @@ function DefaultLayout({ children }) {
   return (
     <div>
       <Header />
-      <div className="container mx-auto dark:bg-slate-800 dark:text-gray-400">
-        <div className="content">{children}</div>
-      </div>
+      <div className="content">{children}</div>
       <Footer />
     </div>
   );

@@ -1,6 +1,6 @@
-/* eslint-disable react/prop-types */
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import ReactPlayer from "react-player";
+import "~/styles/components/CustomReactPlayer.css";
 import {
   Play,
   Pause,
@@ -16,9 +16,8 @@ const CustomVideoPlayer = ({ url }) => {
   const playerRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState("00:06");
+  const [currentTime, setCurrentTime] = useState("00:00");
   const [duration, setDuration] = useState("23:50");
-  const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [subtitles, setSubtitles] = useState(false);
@@ -37,11 +36,6 @@ const CustomVideoPlayer = ({ url }) => {
     setProgress(newProgress);
     playerRef.current.seekTo(newProgress / 100);
   };
-  const handleVolumeChange = (e) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
-    setMuted(newVolume === 0);
-  };
   const handleToggleMute = () => setMuted(!muted);
   const handleSkipBack = () =>
     playerRef.current.seekTo(playerRef.current.getCurrentTime() - 10);
@@ -59,80 +53,63 @@ const CustomVideoPlayer = ({ url }) => {
       }
     }
   };
-  const handleToggleSettings = () => setShowSettings(!showSettings);
 
+  const handleDoubleClick = () => {
+    handleToggleFullScreen();
+  };
+  const handleToggleSettings = () => setShowSettings(!showSettings);
   const formatTime = (seconds) => {
     const date = new Date(seconds * 1000);
     const mm = date.getUTCMinutes();
     const ss = date.getUTCSeconds().toString().padStart(2, "0");
     return `${mm}:${ss}`;
   };
+  const noSelectStyle = {
+    userSelect: "none",
+    WebkitUserSelect: "none",
+    MozUserSelect: "none",
+    msUserSelect: "none",
+  };
+  const preventDefaultBehavior = useCallback((e) => {
+    e.preventDefault();
+    return false;
+  }, []);
+
+  // New function to stop event propagation
+  const stopPropagation = (e) => {
+    e.stopPropagation();
+  };
 
   return (
     <div
       id="player-wrapper"
       className="relative w-full max-w-[960px] mx-auto bg-gray-900 text-white rounded-lg overflow-hidden shadow-lg"
+      onDoubleClick={handleDoubleClick}
+      onClick={handleTogglePlayPause}
+      style={noSelectStyle}
+      onCopy={preventDefaultBehavior}
+      onCut={preventDefaultBehavior}
+      onPaste={preventDefaultBehavior}
+      onContextMenu={preventDefaultBehavior}
     >
-      <div className="aspect-video bg-black">
+      <div className="aspect-video bg-black" style={{ pointerEvents: "none" }}>
         <ReactPlayer
           ref={playerRef}
           url={url}
           width="100%"
           height="100%"
           playing={playing}
-          volume={volume}
           muted={muted}
           onProgress={handleProgress}
           onDuration={handleDuration}
         />
+
         {showSettings && (
           <div className="absolute bottom-11 right-4 bg-gray-900 bg-opacity-90 text-white rounded-lg overflow-hidden shadow-lg p-4 z-10">
+            {/* Settings content... */}
             <h2 className="text-lg font-bold mb-2">Settings</h2>
             <div className="flex items-center space-x-4 mb-2">
-              <label>Subtitles:</label>
-              <input
-                type="checkbox"
-                checked={subtitles}
-                onChange={() => setSubtitles(!subtitles)}
-              />
-            </div>
-            <div className="flex items-center space-x-4 mb-2">
-              <label>Quality:</label>
-              <select
-                value={quality}
-                onChange={(e) => setQuality(e.target.value)}
-                className="bg-gray-700 rounded"
-              >
-                <option value="auto">Auto</option>
-                <option value="1080p">1080p</option>
-                <option value="720p">720p</option>
-                <option value="480p">480p</option>
-                <option value="360p">360p</option>
-              </select>
-            </div>
-            <div className="flex items-center space-x-4 mb-2">
-              <label>Speed:</label>
-              <select
-                value={speed}
-                onChange={(e) => setSpeed(parseFloat(e.target.value))}
-                className="bg-gray-700 rounded"
-              >
-                <option value="1">1x</option>
-                <option value="1.25">1.25x</option>
-                <option value="1.5">1.5x</option>
-                <option value="2">2x</option>
-              </select>
-            </div>
-            <div className="flex items-center space-x-4 mb-2">
-              <label>Server:</label>
-              <select
-                value={server}
-                onChange={(e) => setServer(e.target.value)}
-                className="bg-gray-700 rounded"
-              >
-                <option value="">Select a server</option>
-                {/* Add more server options here */}
-              </select>
+              <label>Cac:</label>
             </div>
           </div>
         )}
@@ -142,25 +119,37 @@ const CustomVideoPlayer = ({ url }) => {
           <div className="flex items-center justify-between mt-2">
             <div className="flex items-center space-x-4">
               <button
-                onClick={handleSkipBack}
+                onClick={(e) => {
+                  stopPropagation(e);
+                  handleSkipBack();
+                }}
                 className="text-white hover:text-gray-300"
               >
                 <SkipBack size={20} />
               </button>
               <button
-                onClick={handleTogglePlayPause}
+                onClick={(e) => {
+                  stopPropagation(e);
+                  handleTogglePlayPause();
+                }}
                 className="text-white hover:text-gray-300"
               >
                 {playing ? <Pause size={24} /> : <Play size={24} />}
               </button>
               <button
-                onClick={handleSkipForward}
+                onClick={(e) => {
+                  stopPropagation(e);
+                  handleSkipForward();
+                }}
                 className="text-white hover:text-gray-300"
               >
                 <SkipForward size={20} />
               </button>
               <button
-                onClick={handleToggleMute}
+                onClick={(e) => {
+                  stopPropagation(e);
+                  handleToggleMute();
+                }}
                 className="text-white hover:text-gray-300"
               >
                 {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
@@ -175,17 +164,24 @@ const CustomVideoPlayer = ({ url }) => {
               max="100"
               value={progress}
               onChange={handleSeek}
+              onClick={stopPropagation}
               className="w-full h-1 mx-4 bg-gray-600 rounded-full appearance-none cursor-pointer"
             />
             <div className="flex items-center space-x-4">
               <button
-                onClick={handleToggleSettings}
+                onClick={(e) => {
+                  stopPropagation(e);
+                  handleToggleSettings();
+                }}
                 className="text-white hover:text-gray-300"
               >
                 <Settings size={20} />
               </button>
               <button
-                onClick={handleToggleFullScreen}
+                onClick={(e) => {
+                  stopPropagation(e);
+                  handleToggleFullScreen();
+                }}
                 className="text-white hover:text-gray-300"
               >
                 <Maximize size={20} />

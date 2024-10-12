@@ -99,10 +99,10 @@ function MovieList({ title }) {
 
                 {/* Tiêu đề và nội dung */}
                 <div className="absolute bottom-4 mx-2 flex flex-col items-start space-y-2">
-                  <p className=" uppercase text-sm font-bold text-shadow hover:text-cyan-200 line-clamp-2">
+                  <p className="uppercase text-sm text-white font-bold text-shadow hover:text-cyan-200 line-clamp-2">
                     {movie.title}
                   </p>
-                  <p className="text-sm text-shadow hover:text-yellow-300">
+                  <p className="text-sm text-white text-shadow hover:text-yellow-300">
                     Season {movie.season} | Episode {movie.episode}
                   </p>
                 </div>

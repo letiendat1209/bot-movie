@@ -1,5 +1,7 @@
 import BilingualSubtitles from "~/components/BilingualSubtitles";
-import CustomReactPlayer from "~/components/CustomReactPlayer";
+// import CustomVideoPlayer from "~/components/CustomVideoPlayer";
+import CustomVideoPlayerV2 from "~/components/CustomVideoPlayerV2";
+
 import MovieList from "~/components/MovieList";
 
 import {
@@ -14,14 +16,12 @@ import EpisodeSidebar from "~/components/EpisodeSidebar";
 import "~/styles/components/MovieDetail.css";
 function MovieDetail() {
   return (
-    <div className="dark:bg-slate-800 dark:text-gray-400 pt-[60px] s360:px-[0px] s375:px-[0px] s412:px-[0px] s480:px-[0px] s640:px-[0px] s768:px-8 s800:px-[0px] s900:px-[40px] s1024:px-[40px] s1280:px-[40px] s1366:px-[40px]">
+    <div className="dark:bg-slate-800 dark:text-gray-400 pt-[60px] s360:px-[0px] s375:px-[0px] s412:px-[0px] s480:px-[0px] s640:px-[0px] s768:px[0] s800:px-[0px] s900:px-[40px] s1024:px-[40px] s1280:px-[40px] s1366:px-[40px]">
       {/* Main Content */}
       <div className="mt-[20px] px-[10px] s1024:px-0 s1024:flex gap-2 s1024:gap-3">
         {/* Video Player */}
         <div className="shrink-0 w-full s1024:w-[640px] s1280:w-[880px] s1366:w-[960px]">
-          <div className="w-full h-[169px] s360:h-[191px] s375:h-[200px] s412:h-[221px] s480:h-[h-259px] s640:h-[349px] s768:h-[421px] s800:h-[439px] s1024:h-[360px] s1280:h-[495px] s1366:h-[540px]">
-            <CustomReactPlayer url="https://vimeo.com/manage/videos/1016909521" />
-          </div>
+          <CustomVideoPlayerV2 url="https://vimeo.com/manage/videos/1016909521" />
           <div className="mt-4 mb-2">
             <h1 className="film-info-title text-[16px] s768:text-[18px] s1024:text-[20px] uppercase">
               CON LỢN VÀ CÔ GÁI: 100-NGÀY LÀM LỢN TẬP 1
@@ -65,9 +65,11 @@ function MovieDetail() {
           </div>
         </div>
         {/* Sidebar - Video List */}
-        <EpisodeSidebar />
-        {/* Sidebar - Song ngữ */}
         <div className="hidden">
+          <EpisodeSidebar />
+        </div>
+        {/* Sidebar - Song ngữ */}
+        <div>
           <BilingualSubtitles />
         </div>
       </div>
@@ -94,11 +96,11 @@ function MovieDetail() {
                   groups={[
                     {
                       name: "Wicked House",
-                      href: "https://www.facebook.com/letiendat1209/",
+                      href: "https://www.facebook.com/letiendat912",
                     },
                     {
-                      name: "Test multitag",
-                      href: "https://www.facebook.com/letiendat1209/",
+                      name: "Omamori お守り",
+                      href: "https://www.facebook.com/letiendat912",
                     },
                   ]}
                 />

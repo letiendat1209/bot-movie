@@ -22,8 +22,8 @@ export const CustomButton = ({
       className={`flex items-center gap-1 rounded-full cursor-pointer ${colorClass} text-white font-light ${sizeClasses[size]}`}
       onClick={onClick}
     >
-      <i className={`${iconClass} ${iconSizes[size]} mr-2`}></i>
-      {text}
+      <i className={`${iconClass} ${iconSizes[size]}`}></i>
+      <span className="hidden sm:inline">{text}</span>
     </button>
   );
 };
