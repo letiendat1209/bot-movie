@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const movies = [
   {
@@ -66,7 +67,7 @@ const movies = [
 
 function MovieList({ title }) {
   return (
-    <div className="text-white px-10 py-5 mb-2">
+    <>
       <h2 className="uppercase text-3xl font-bold mb-4 text-cyan-200">
         {title}
       </h2>
@@ -74,41 +75,43 @@ function MovieList({ title }) {
         Find the best new and continuing simulcasts here!
       </h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {movies.map((movie) => (
-          <div
-            key={movie.id}
-            className="w-full h-full relative group overflow-hidden"
-          >
-            <div className="relative w-full h-full cursor-pointer">
-              {/* Ảnh */}
-              <img
-                className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                src={movie.image}
-                alt={movie.title}
-              />
+        {movies.map((movie, index) => (
+          <Link to={`/movie`} key={index}>
+            <div
+              key={movie.id}
+              className="w-full h-full relative group overflow-hidden"
+            >
+              <div className="relative w-full h-full cursor-pointer">
+                {/* Ảnh */}
+                <img
+                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                  src={movie.image}
+                  alt={movie.title}
+                />
 
-              {/* Lớp phủ tối */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                {/* Lớp phủ tối */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
 
-              {/* Rating */}
-              <div className="absolute top-2 left-2 bg-yellow-400 text-black px-2 py-1 text-xs font-bold rounded">
-                ★ {movie.rating}
-              </div>
+                {/* Rating */}
+                <div className="absolute top-2 left-2 bg-yellow-400 text-black px-2 py-1 text-xs font-bold rounded">
+                  ★ {movie.rating}
+                </div>
 
-              {/* Tiêu đề và nội dung */}
-              <div className="absolute bottom-4 mx-2 flex flex-col items-start space-y-2">
-                <p className=" uppercase text-sm font-bold text-shadow hover:text-cyan-200 line-clamp-2">
-                  {movie.title}
-                </p>
-                <p className="text-sm text-shadow hover:text-yellow-300">
-                  Season {movie.season} | Episode {movie.episode}
-                </p>
+                {/* Tiêu đề và nội dung */}
+                <div className="absolute bottom-4 mx-2 flex flex-col items-start space-y-2">
+                  <p className=" uppercase text-sm font-bold text-shadow hover:text-cyan-200 line-clamp-2">
+                    {movie.title}
+                  </p>
+                  <p className="text-sm text-shadow hover:text-yellow-300">
+                    Season {movie.season} | Episode {movie.episode}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
-    </div>
+    </>
   );
 }
 

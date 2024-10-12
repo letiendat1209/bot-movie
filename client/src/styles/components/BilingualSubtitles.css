@@ -1,0 +1,38 @@
+/* styles/components/BilingualSubtitles.css */
+.bilingual-subtitles {
+  /* Ẩn thanh cuộn mặc định khi không hover */
+  overflow: hidden;
+  height: 400px;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
+
+.bilingual-subtitles:hover {
+  /* Hiện thanh cuộn khi di chuột vào */
+  overflow-y: auto;
+}
+
+/* Điều chỉnh thanh cuộn để đè lên nội dung thay vì đẩy nội dung */
+.bilingual-subtitles::-webkit-scrollbar {
+  width: 8px;
+}
+
+.bilingual-subtitles::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+}
+
+.bilingual-subtitles::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Đối với Firefox */
+.bilingual-subtitles {
+  scrollbar-width: thin; /* Làm thanh cuộn nhỏ và đè lên nội dung cho khỏi vỡ layout */
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent; /* Màu thanh cuộn */
+}
+
+/* Cấu hình cho trình duyệt hỗ trợ tính năng mới (ví dụ: Chromium, Firefox) */
+.bilingual-subtitles {
+  scrollbar-gutter: stable both-edges; /* Thanh cuộn đè lên nội dung mà không làm vỡ layout */
+}

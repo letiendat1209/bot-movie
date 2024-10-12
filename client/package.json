@@ -11,16 +11,23 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
+    "lucide-react": "^0.452.0",
+    "perfect-scrollbar": "^1.5.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-player": "^2.16.0",
     "react-router-dom": "^6.26.2",
-    "swiper": "^11.1.14"
+    "react-youtube": "^10.1.0",
+    "swiper": "^11.1.14",
+    "video-react": "^0.16.0",
+    "video.js": "^8.18.1",
+    "webvtt-parser": "^2.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.9.0",
     "eslint-plugin-react": "^7.35.0",

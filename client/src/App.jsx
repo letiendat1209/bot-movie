@@ -1,16 +1,11 @@
-import "./styles/base.css";
-import "./styles/components.css";
-import "./styles/layouts.css";
-import "./styles/util.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { DefaultLayout } from "~/Container/Layouts";
 import { publicRoutes } from "./routes";
-import { DefaultLayout } from "./components/Layouts";
 import { Fragment } from "react";
 function App() {
   return (
     <Router>
-      <div className="App">
+      <div className="App bg-white dark:bg-slate-800">
         <Routes>
           {publicRoutes.map((route, index) => {
             const Page = route.component;

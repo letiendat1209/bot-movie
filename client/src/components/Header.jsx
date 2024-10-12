@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 function Header() {
@@ -8,25 +9,26 @@ function Header() {
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
       setDarkMode(true);
-      document.body.classList.add("dark"); // Thêm lớp 'dark' khi chế độ tối
+      document.documentElement.classList.add("dark"); // thêm class 'dark' vào thẻ html
     } else {
-      document.body.classList.remove("dark"); // Loại bỏ lớp 'dark' khi chế độ sáng
+      setDarkMode(false);
+      document.documentElement.classList.remove("dark"); // loại bỏ class 'dark' nếu không có
     }
   }, []);
   const toggleTheme = () => {
-    setDarkMode(!darkMode);
     if (darkMode) {
-      document.body.classList.remove("dark");
+      document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", "light");
     } else {
-      document.body.classList.add("dark");
+      document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
     }
+    setDarkMode(!darkMode);
   };
 
   return (
     <header className="bg-transparent text-white fixed top-0 left-0 w-full z-50 shadow-lg backdrop-blur-sm">
-      <div className="container mx-auto px-4  py-2 flex items-center justify-between">
+      <div className="container mx-auto px-[40px]  py-2 flex items-center justify-between">
         {/* Mobile Menu Button */}
         <div className="md:hidden">
           <button
@@ -38,34 +40,36 @@ function Header() {
         </div>
         {/* Logo */}
         <div className="flex items-center space-x-2">
-          <h1 className="text-cyan-200 font-bold text-lg md:text-xl">
-            BỘT PHIM
-          </h1>
+          <Link to="/">
+            <h1 className="text-cyan-200 font-bold text-lg md:text-xl">
+              BỘT PHIM
+            </h1>
+          </Link>
         </div>
 
         {/* Menu Items for larger screens */}
         <nav className="hidden md:flex space-x-4">
           <a
             href="#"
-            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full hover:text-cyan-500"
+            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 "
           >
             Anime
           </a>
           <a
             href="#"
-            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full hover:text-cyan-500"
+            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 "
           >
             Movie
           </a>
           <a
             href="#"
-            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full hover:text-cyan-500"
+            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 "
           >
             English 1-1
           </a>
           <a
             href="#"
-            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full hover:text-cyan-500"
+            className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 "
           >
             BXH
           </a>

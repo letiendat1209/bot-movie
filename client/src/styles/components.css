@@ -1,8 +1,0 @@
-/* src/styles/components.css */
-.btn-custom {
-  @apply bg-teal-500 text-white py-2 px-4 rounded;
-}
-
-.card-custom {
-  @apply shadow-lg border rounded-lg p-4;
-}

@@ -1,7 +1,7 @@
 import toji from "../../public/assets/toji.png";
 function Footer() {
   return (
-    <footer className="relative text-white p-8 mt-8">
+    <footer className="relative text-white p-8 mt-8 bg-gray-800 dark:bg-black">
       {/* Background Image */}
       <div className="absolute inset-0 bg-cover bg-center opacity-50">
         <img className="w-full h-full object-cover" src={toji} alt="" />
