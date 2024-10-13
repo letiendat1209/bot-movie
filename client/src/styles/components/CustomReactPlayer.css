@@ -7,6 +7,8 @@ input[type="range"] {
   width: 8px; /* Độ rộng của thanh trượt */
   height: 150px; /* Chiều cao của thanh trượt */
   background: lightblue; /* Màu nền */
+  background: linear-gradient(to top, #93c5fd, #3b82f6);
+  border-radius: 99px;
   position: relative;
 }
 
@@ -15,10 +17,12 @@ input[type="range"]::-webkit-slider-thumb {
   appearance: none;
   width: 12px; /* Kích thước nút tròn */
   height: 12px;
+  background: lightblue; /* Màu nền */
   background: blue; /* Màu của nút */
-  background: linear-gradient(to top, #93c5fd, #3b82f6);
   border-radius: 50%; /* Làm tròn nút */
   cursor: pointer;
   position: relative;
   margin-top: -6px; /* Căn giữa nút */
 }
+
+

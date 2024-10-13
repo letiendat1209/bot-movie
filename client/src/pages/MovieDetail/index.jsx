@@ -1,9 +1,19 @@
 import BilingualSubtitles from "~/components/BilingualSubtitles";
 // import CustomVideoPlayer from "~/components/CustomVideoPlayer";
-import CustomVideoPlayerV2 from "~/components/CustomVideoPlayerV2";
+// import CustomVideoPlayerV2 from "~/components/CustomVideoPlayerV2";
 
 import MovieList from "~/components/MovieList";
-
+// eslint-disable-next-line no-unused-vars
+const video = [
+  {
+    src: "https://www.youtube.com/watch?v=csHZHYTuo70",
+    provider: "youtube",
+  },
+  {
+    src: "https://vimeo.com/1016909521",
+    provider: "vimeo",
+  },
+];
 import {
   CustomButton,
   ImageWithOverlay,
@@ -14,6 +24,7 @@ import {
 } from "~/Container/reusable"; // hàng tái sử dụng reusable
 import EpisodeSidebar from "~/components/EpisodeSidebar";
 import "~/styles/components/MovieDetail.css";
+import VideoPlayer from "~/components/CustomVideoPlayer";
 function MovieDetail() {
   return (
     <div className="dark:bg-slate-800 dark:text-gray-400 pt-[60px] s360:px-[0px] s375:px-[0px] s412:px-[0px] s480:px-[0px] s640:px-[0px] s768:px[0] s800:px-[0px] s900:px-[40px] s1024:px-[40px] s1280:px-[40px] s1366:px-[40px]">
@@ -21,7 +32,11 @@ function MovieDetail() {
       <div className="mt-[20px] px-[10px] s1024:px-0 s1024:flex gap-2 s1024:gap-3">
         {/* Video Player */}
         <div className="shrink-0 w-full s1024:w-[640px] s1280:w-[880px] s1366:w-[960px]">
-          <CustomVideoPlayerV2 url="https://vimeo.com/manage/videos/1016909521" />
+          <VideoPlayer
+            src="https://vimeo.com/1016909521"
+            provider="vimeo"
+          />
+
           <div className="mt-4 mb-2">
             <h1 className="film-info-title text-[16px] s768:text-[18px] s1024:text-[20px] uppercase">
               CON LỢN VÀ CÔ GÁI: 100-NGÀY LÀM LỢN TẬP 1

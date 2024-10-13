@@ -17,6 +17,8 @@ import {
   ChevronsRight,
   ChevronsLeft,
   X,
+  Captions,
+  PictureInPicture2,
 } from "lucide-react";
 
 const CustomVideoPlayerV2 = ({ url }) => {
@@ -30,42 +32,52 @@ const CustomVideoPlayerV2 = ({ url }) => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
-  const playerRef = useRef(null);
+  const [isPipEnabled, setIsPipEnabled] = useState(false);
+
+  const playerRef = useRef(null); // Tham chiếu tới video player
   const containerRef = useRef(null);
-  const progressRef = useRef(null);
+  const progressRef = useRef(null); // Tham chiếu tới thanh tiến trình
   const volumeSliderRef = useRef(null);
 
-  const handlePlayPause = () => setPlaying(!playing);
+  const [buffered, setBuffered] = useState(0); // Thêm state cho phần buffered
 
+  // Tạm dừng
+  const handlePlayPause = () => setPlaying(!playing);
+  // Tua video 10s
   const handleRewind = () => {
     const time = playerRef.current.getCurrentTime();
     playerRef.current.seekTo(Math.max(time - 10, 0));
   };
-
+  // Chuyển tiếp 10s
   const handleForward = () => {
     const time = playerRef.current.getCurrentTime();
     playerRef.current.seekTo(Math.min(time + 10, duration));
   };
-
+  // Tiến trình video
   const handleProgress = (state) => {
     setProgress(state.played);
     setCurrentTime(state.playedSeconds);
+    setBuffered(state.loaded); // Cập nhật phần buffered từ state.loaded
   };
 
+  /**
+   * Tua video dựa vào vị trí chuột click vào thanh tiến trình
+   * @param {MouseEvent} e - Sự kiện click vào thanh tiến trình
+   */
   const handleSeek = (e) => {
     const bounds = progressRef.current.getBoundingClientRect();
     const percent = (e.clientX - bounds.left) / bounds.width;
     playerRef.current.seekTo(percent);
   };
-
+  // Tắt âm
   const toggleMute = () => setMuted(!muted);
-
+  // Tăng giảm âm lượng
   const handleVolumeChange = (e) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
     setMuted(newVolume === 0);
   };
-
+  // Phóng to màn hình
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       containerRef.current.requestFullscreen();
@@ -73,7 +85,7 @@ const CustomVideoPlayerV2 = ({ url }) => {
       document.exitFullscreen();
     }
   };
-
+  // Bật cài đặt
   const toggleSettings = () => setShowSettings(!showSettings);
 
   useEffect(() => {
@@ -93,25 +105,80 @@ const CustomVideoPlayerV2 = ({ url }) => {
         setShowVolumeSlider(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+  /**
+   * Chuyển đổi giây sang phút và giây ( từ từ sửa sau sang dạng có hh:mm:ss)
+   * @param {number} timeInSeconds - Số giây
+   * @returns {string} Chuỗi có dạng "mm:ss"
+   */
+  //
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
+  // Cập nhật hàm togglePip
+  const togglePip = () => {
+    if (playerRef.current) {
+      const internalPlayer = playerRef.current.getInternalPlayer();
+      if (internalPlayer && document.pictureInPictureEnabled) {
+        if (document.pictureInPictureElement) {
+          document.exitPictureInPicture();
+        } else {
+          internalPlayer.requestPictureInPicture();
+        }
+      } else {
+        console.log("Picture-in-Picture is not supported");
+      }
+    }
+  };
 
+  // Cập nhật effect để kiểm tra hỗ trợ PiP một cách an toàn
+  useEffect(() => {
+    const checkPipSupport = () => {
+      if (playerRef.current) {
+        const internalPlayer = playerRef.current.getInternalPlayer();
+        if (internalPlayer && document.pictureInPictureEnabled) {
+          setIsPipEnabled(true);
+        } else {
+          setIsPipEnabled(false);
+        }
+      }
+    };
+
+    // Kiểm tra sau khi component đã mount
+    checkPipSupport();
+
+    // Thêm event listener cho sự kiện 'loadedmetadata'
+    const videoElement = playerRef.current?.getInternalPlayer();
+    if (videoElement) {
+      videoElement.addEventListener("loadedmetadata", checkPipSupport);
+    }
+
+    // Cleanup function
+    return () => {
+      if (videoElement) {
+        videoElement.removeEventListener("loadedmetadata", checkPipSupport);
+      }
+    };
+  }, []);
+
+  // Các nút control bên trái
   const controlButtonsLeft = [
     {
       icon: <ChevronsLeft size={20} />,
-      onClick: () => console.log("Back"),
+      onClick: () => alert("Nút chuyển tập trước"),
       label: "Back",
     },
-    { icon: <SkipBack size={20} />, onClick: handleRewind, label: "Rewind" },
+    {
+      icon: <SkipBack size={20} />,
+      onClick: handleRewind,
+      label: "Backward video",
+    },
     {
       icon: playing ? <Pause size={20} /> : <Play size={20} />,
       onClick: handlePlayPause,
@@ -124,7 +191,8 @@ const CustomVideoPlayerV2 = ({ url }) => {
     },
     {
       icon: <ChevronsRight size={20} />,
-      label: "Continue",
+      onClick: () => alert("Nút chuyển tập tiếp theo"),
+      label: "Next video",
     },
     {
       icon: muted ? <VolumeX size={20} /> : <Volume2 size={20} />,
@@ -132,7 +200,13 @@ const CustomVideoPlayerV2 = ({ url }) => {
       label: "Volume",
     },
   ];
+  // Các nút control bên phải
   const controlButtonsRight = [
+    {
+      icon: <PictureInPicture2 size={20} />,
+      onClick: () => togglePip(),
+      label: "Picture-in-Picture",
+    },
     {
       icon: <Settings size={20} />,
       onClick: toggleSettings,
@@ -177,23 +251,28 @@ const CustomVideoPlayerV2 = ({ url }) => {
               {formatTime(currentTime)} / {formatTime(duration)}
             </span>
           </div>
-
+          {/* Thanh tiến trình */}
           <div className="flex-1">
             <div
               ref={progressRef}
               className="relative bg-gray-800 h-2 w-full rounded-full cursor-pointer shadow-md transition-transform duration-500 hover:shadow-xl"
               onClick={handleSeek}
             >
-              {/* Thanh tiến trình */}
+              {/* Phần video đã load */}
+              <div
+                className="absolute top-0 left-0 h-full bg-gray-500 rounded-full transition-all duration-500 ease-in-out"
+                style={{ width: `${buffered * 100}%` }}
+              />
+              {/* Phần tiến trình video */}
               <div
                 className="absolute top-0 left-0 h-full bg-gradient-to-r from-teal-400 via-blue-500 to-indigo-600 rounded-full transition-all duration-500 ease-in-out"
                 style={{ width: `${progress * 100}%` }}
               />
               {/* Nút hiển thị vị trí hiện tại */}
-              <div
+              {/* <div
                 className="absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-gradient-to-r from-teal-400 to-indigo-600 rounded-full shadow-lg hover:scale-125 transition-transform duration-300 ease-in-out"
                 style={{ left: `calc(${progress * 100}% - 8px)` }}
-              />
+              /> */}
             </div>
           </div>
 
@@ -224,8 +303,8 @@ const CustomVideoPlayerV2 = ({ url }) => {
               value={volume}
               onChange={handleVolumeChange}
               style={{
-                WebkitAppearance: "slider-vertical",
-                writingMode: "bt-lr",
+                writingMode: "vertical-lr",
+                direction: "rtl",
               }}
             />
           </div>
