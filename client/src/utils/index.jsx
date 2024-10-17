@@ -13,3 +13,4 @@ export const formatTime = (time) => {
     return `${hours}:${minutes.toString().padStart(2, "0")} `;
   } else return `${minutes}:${seconds}`;
 };
+

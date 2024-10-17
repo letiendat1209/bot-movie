@@ -31,8 +31,8 @@ function Header() {
         setIsSidebarOpen(!isSidebarOpen);
     };
     return (
-        <header className="bg-transparent text-white fixed top-0 left-0 w-full z-50 shadow-lg backdrop-blur-sm">
-            <div className="container mx-auto px-[40px] gap-2 py-2 flex items-center justify-between">
+        <header className="fixed left-0 top-0 z-50 w-full bg-transparent text-white shadow-lg backdrop-blur-sm">
+            <div className="container mx-auto flex items-center justify-between gap-2 px-[40px] py-2">
                 {/* Mobile Menu Button */}
                 <div className="md:hidden">
                     <button
@@ -45,68 +45,71 @@ function Header() {
                 {/* Logo */}
                 <div className="flex items-center space-x-2">
                     <Link to="/">
-                        <h1 className="text-cyan-200 font-bold text-lg md:text-xl whitespace-nowrap">BỘT PHIM</h1>
+                        <h1 className="whitespace-nowrap text-lg font-bold text-cyan-200 md:text-xl">BỘT PHIM</h1>
                     </Link>
                 </div>
 
                 {/* Menu Items for larger screens */}
-                <nav className="hidden md:flex gap-2">
+                <nav className="hidden gap-2 md:flex">
                     <a
                         href="#"
-                        className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 whitespace-nowrap"
+                        className="whitespace-nowrap rounded-full border border-gray-500 bg-transparent px-4 py-2 text-cyan-200 hover:text-cyan-500 dark:text-white"
                     >
                         Anime
                     </a>
                     <a
                         href="#"
-                        className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 whitespace-nowrap"
+                        className="whitespace-nowrap rounded-full border border-gray-500 bg-transparent px-4 py-2 text-cyan-200 hover:text-cyan-500 dark:text-white"
                     >
                         Movie
                     </a>
                     <a
                         href="#"
-                        className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 whitespace-nowrap"
+                        className="whitespace-nowrap rounded-full border border-gray-500 bg-transparent px-4 py-2 text-cyan-200 hover:text-cyan-500 dark:text-white"
                     >
                         English 1-1
                     </a>
                     <a
                         href="#"
-                        className="px-4 py-2 bg-transparent border border-gray-500 rounded-full text-cyan-200 dark:text-white hover:text-cyan-500 whitespace-nowrap"
+                        className="whitespace-nowrap rounded-full border border-gray-500 bg-transparent px-4 py-2 text-cyan-200 hover:text-cyan-500 dark:text-white"
                     >
                         BXH
                     </a>
                 </nav>
                 {/* Search Bar (hidden on mobile) */}
-                <div className="hidden lg:block relative border border-gray-500 rounded-full">
+                <div className="relative hidden rounded-full border border-gray-500 lg:block">
                     <input
                         type="text"
-                        className="bg-transparent rounded-full px-4 py-2 w-[200px] md:w-[320px] text-white focus:outline-none"
+                        className="w-[200px] rounded-full border border-gray-600 bg-opacity-70 px-4 py-2 text-white placeholder-gray-400 shadow-md transition-all duration-300 ease-in-out hover:bg-gray-700 focus:border-blue-300 focus:outline-none focus:ring-1 focus:ring-blue-500 md:w-[320px]"
                         placeholder="Search..."
                     />
-                    <span className="absolute right-3 top-2 text-gray-400">
-                        <i className="fas fa-search"></i>
-                    </span>
+
+                    <Link to="/search">
+                        <span className="absolute right-3 top-2 text-gray-400 hover:text-white">
+                            <i className="fas fa-search"></i>
+                        </span>
+                    </Link>
                 </div>
                 {/* Icons */}
-                <div className="flex space-x-4 items-center">
-                    <button onClick={toggleTheme} className="focus:outline-none border border-gray-500 p-2 rounded-full">
+                <div className="flex items-center space-x-4">
+                    <button onClick={toggleTheme} className="rounded-full border border-gray-500 p-2 focus:outline-none">
                         {darkMode ? (
-                            <i className="fa-solid fa-moon text-gray-400 hover:text-white w-[16px]"></i>
+                            <i className="fa-solid fa-moon w-[16px] text-gray-400 hover:text-white"></i>
                         ) : (
                             <i className="fa-solid fa-sun text-gray-400 hover:text-white"></i>
                         )}
                     </button>
-                    <button className="focus:outline-none border border-gray-500 p-2 rounded-full">
+                    <button className="rounded-full border border-gray-500 p-2 focus:outline-none">
                         <i className="fas fa-bell text-gray-400 hover:text-white"></i>
                     </button>
-                    <div className="border border-gray-500 rounded-full cursor-pointer" onClick={toggleSidebar}>
+                    <div className="cursor-pointer rounded-full border border-gray-500" onClick={toggleSidebar}>
                         <img src="https://avatarfiles.alphacoders.com/375/375863.jpeg" alt="Profile" className="h-10 w-10 rounded-full" />
                     </div>
                 </div>
             </div>
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
-                <nav className="md:hidden bg-transparent p-4 space-y-2 backdrop-blur-sm">
+                <nav className="space-y-2 bg-transparent p-4 backdrop-blur-sm md:hidden">
                     <a href="#" className="block text-white hover:text-cyan-500">
                         Anime
                     </a>

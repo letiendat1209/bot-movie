@@ -3,6 +3,7 @@ import { DefaultLayout } from '~/Container/Layouts';
 import { publicRoutes } from './routes';
 import { Fragment } from 'react';
 import 'plyr-react/plyr.css';
+
 function App() {
     return (
         <Router>

@@ -11,50 +11,50 @@ function Sidebar({ isOpen, toggleSidebar }) {
         <>
             {/* Overlay */}
             <div
-                className={`fixed inset-0 h-screen bg-black bg-opacity-50 z-40 transition-opacity ${
-                    isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+                className={`fixed inset-0 z-40 h-screen bg-black bg-opacity-50 transition-opacity ${
+                    isOpen ? 'visible opacity-100' : 'invisible opacity-0'
                 }`}
                 onClick={toggleSidebar} // Khi ấn vào overlay sẽ đóng sidebar
             ></div>
 
             <div
-                className={`fixed top-0 right-0 w-[300px] h-screen bg-[#1c1c1e] bg-opacity-50 backdrop-blur-sm text-white shadow-lg z-50 transition-transform transform ${
+                className={`fixed right-0 top-0 z-50 h-screen w-[300px] transform bg-[#1c1c1e] bg-opacity-50 text-white shadow-lg backdrop-blur-sm transition-transform ${
                     isOpen ? 'translate-x-0' : 'translate-x-full'
                 }`}
             >
                 <div className="p-4 pt-2">
-                    <div className="flex justify-between items-center">
-                        <button onClick={toggleSidebar} className="text-white text-2xl hover:text-gray-400 focus:outline-none">
+                    <div className="flex items-center justify-between">
+                        <button onClick={toggleSidebar} className="text-2xl text-white hover:text-gray-400 focus:outline-none">
                             &times;
                         </button>
                         <img
                             src="https://avatarfiles.alphacoders.com/375/375863.jpeg"
                             alt="Avatar"
-                            className="h-10 w-10 mr-6 rounded-full"
+                            className="mr-6 h-10 w-10 rounded-full"
                         />
                     </div>
-                    <h2 className="text-md font-semibold my-4">Chào datvipprono1!</h2>
+                    <h2 className="text-md my-4 font-semibold">Chào datvipprono1!</h2>
 
                     {/* Tabs */}
                     <div className="flex space-x-4">
                         <span
-                            className={`text-sm p-2 border-b-2 cursor-pointer ${
-                                activeTab === 'Thông tin' ? 'text-cyan-500 border-cyan-500' : 'text-white border-transparent'
+                            className={`cursor-pointer border-b-2 p-2 text-sm ${
+                                activeTab === 'Thông tin' ? 'border-cyan-500 text-cyan-500' : 'border-transparent text-white'
                             } hover:text-cyan-500`}
                             onClick={() => setActiveTab('Thông tin')}
                         >
                             Thông tin
                         </span>
                         <span
-                            className={`text-sm p-2 border-b-2 cursor-pointer ${
-                                activeTab === 'Thông báo' ? 'text-cyan-500 border-cyan-500' : 'text-white border-transparent'
+                            className={`cursor-pointer border-b-2 p-2 text-sm ${
+                                activeTab === 'Thông báo' ? 'border-cyan-500 text-cyan-500' : 'border-transparent text-white'
                             } hover:text-cyan-500`}
                             onClick={() => setActiveTab('Thông báo')}
                         >
                             Thông báo
                         </span>
                     </div>
-                    <hr className="border-gray-500 mb-4" />
+                    <hr className="mb-4 border-gray-500" />
 
                     {activeTab === 'Thông tin' && (
                         <nav className="space-y-4">
@@ -62,15 +62,15 @@ function Sidebar({ isOpen, toggleSidebar }) {
                             <div className="space-y-2">
                                 <Link to="/profile" className="flex items-center space-x-2 hover:text-cyan-500">
                                     <UserRound className="h-5 w-5" />
-                                    <span className="font-light pl-2">Trang cá nhân</span>
+                                    <span className="pl-2 font-light">Trang cá nhân</span>
                                 </Link>
                                 <Link to="/edit-info" className="flex items-center space-x-2 hover:text-cyan-500">
                                     <UserRoundPen className="h-5 w-5" />
-                                    <span className="font-light pl-2">Sửa thông tin</span>
+                                    <span className="pl-2 font-light">Sửa thông tin</span>
                                 </Link>
                                 <Link to="/change-password" className="flex items-center space-x-2 hover:text-cyan-500">
                                     <Lock className="h-5 w-5" />
-                                    <span className="font-light pl-2">Đổi mật khẩu</span>
+                                    <span className="pl-2 font-light">Đổi mật khẩu</span>
                                 </Link>
                             </div>
 
@@ -80,15 +80,15 @@ function Sidebar({ isOpen, toggleSidebar }) {
                             <div className="space-y-2">
                                 <Link to="/watched-movies" className="flex items-center space-x-2 hover:text-cyan-500">
                                     <Film className="h-5 w-5" />
-                                    <span className="font-light pl-2">Phim đã xem</span>
+                                    <span className="pl-2 font-light">Phim đã xem</span>
                                 </Link>
                                 <Link to="/liked-movies" className="flex items-center space-x-2 hover:text-cyan-500">
                                     <Heart className="h-5 w-5" />
-                                    <span className="font-light pl-2">Phim đã thích</span>
+                                    <span className="pl-2 font-light">Phim đã thích</span>
                                 </Link>
                                 <Link to="/following-movies" className="flex items-center space-x-2 hover:text-cyan-500">
                                     <Eye className="h-5 w-5" />
-                                    <span className="font-light pl-2">Phim đang theo dõi</span>
+                                    <span className="pl-2 font-light">Phim đang theo dõi</span>
                                 </Link>
                             </div>
 
@@ -98,7 +98,7 @@ function Sidebar({ isOpen, toggleSidebar }) {
                             <div className="space-y-2">
                                 <Link to="/#" className="flex items-center space-x-2 hover:text-cyan-500">
                                     <BookA className="h-5 w-5" />
-                                    <span className="font-light pl-2">Cặp câu song ngữ</span>
+                                    <span className="pl-2 font-light">Cặp câu song ngữ</span>
                                 </Link>
                             </div>
 
@@ -106,9 +106,9 @@ function Sidebar({ isOpen, toggleSidebar }) {
 
                             {/* Phần 4 */}
                             <div className="space-y-2">
-                                <Link to="/logout" className="flex mt-6 items-center space-x-2 hover:text-cyan-500">
+                                <Link to="/logout" className="mt-6 flex items-center space-x-2 hover:text-cyan-500">
                                     <Power className="h-5 w-5" />
-                                    <span className="font-light pl-2">Đăng xuất</span>
+                                    <span className="pl-2 font-light">Đăng xuất</span>
                                 </Link>
                             </div>
                         </nav>

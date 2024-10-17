@@ -1,6 +1,9 @@
 @import "./reset.css"; /* Reset phải lên đầu */
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+
 /* Biến dùng chung */
 :root {
   --bg-color: rgb(243 244 246);
