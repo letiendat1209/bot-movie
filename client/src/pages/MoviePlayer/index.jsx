@@ -21,7 +21,7 @@ function MoviePlayer() {
     };
 
     return (
-        <div className="s768:px[0] pt-[60px] dark:bg-slate-800 dark:text-gray-400 s360:px-[0px] s375:px-[0px] s412:px-[0px] s480:px-[0px] s640:px-[0px] s800:px-[0px] s900:px-[40px] s1024:px-[40px] s1280:px-[40px] s1366:px-[40px]">
+        <div className="pt-[60px] dark:bg-slate-800 dark:text-gray-400 s360:px-[0px] s375:px-[0px] s412:px-[0px] s480:px-[0px] s640:px-[0px] s800:px-[0px] s900:px-[40px] s1024:px-[40px] s1280:px-[40px] s1366:px-[40px]">
             {/* Main Content */}
             <div className="mt-[20px] gap-2 px-[10px] s1024:flex s1024:gap-3 s1024:px-0">
                 {/* Video Player */}
@@ -57,19 +57,26 @@ function MoviePlayer() {
                                 colorClass="bg-sky-700"
                                 onClick={() => alert('Đã chia sẻ!')}
                             />
-                            <div className="ml-auto">
+
+                            <div className="ml-auto flex items-center gap-2">
                                 <CustomButton
-                                    iconClass={showBilingualTab ? "fas fa-list" : "fas fa-language"}
-                                    text={showBilingualTab ? "Danh sách tập" : "Bật tab song ngữ"}
-                                    colorClass={showBilingualTab ? "bg-sky-700" : "bg-orange-700"}
+                                    iconClass={showBilingualTab ? 'fas fa-list' : 'fas fa-language'}
+                                    text={showBilingualTab ? 'Danh sách tập' : 'Bật song ngữ'}
+                                    colorClass={showBilingualTab ? 'bg-sky-700' : 'bg-orange-700'}
                                     onClick={toggleBilingualTab}
+                                />
+                                <CustomButton
+                                    iconClass="fas fa-upload"
+                                    text="Đóng góp phụ đề"
+                                    colorClass="bg-sky-700"
+                                    onClick={() => alert('Bạn phải đăng nhập để đóng góp!')}
                                 />
                             </div>
                         </div>
                     </div>
                 </div>
                 {/* Sidebar - Video List or Bilingual Tab with Animation */}
-                <div className="relative w-full overflow-hidden ">
+                <div className="relative w-full overflow-hidden">
                     <AnimatePresence initial={false} mode="wait">
                         <motion.div
                             key={showBilingualTab ? 'bilingual' : 'episodes'}

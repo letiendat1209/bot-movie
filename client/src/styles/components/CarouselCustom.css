@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=League+Gothic&display=swap');
+
+:root {
+  --w-column: 200px;
+}
+
+.carousel {
+  background-image: radial-gradient(#2b2e4f, #111126);
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.carousel .list {
+  width: min(1200px, 90vw);
+  margin: auto;
+  height: 100%;
+  position: relative;
+}
+
+.carousel .item {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateX(100vw);
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.carousel .item.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.carousel .item figure {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel .item figure img {
+  width: auto;
+  height: 100%;
+  transform: none; /* Loại bỏ xoay hình ảnh */
+  object-fit: contain; /* Đảm bảo hình ảnh được chứa trong khu vực mà không bị cắt */
+}
+
+.carousel .arrows {
+  width: min(1200px, 90vw);
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -25px);
+}
+
+.carousel .arrows button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 1px solid #659cdf55;
+  background-color: #232442;
+  color: #fff7;
+  font-size: large;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: 0.5s;
+}
+
+.carousel .arrows button:hover {
+  border: 1px solid #659cdf;
+  color: #fff;
+}
+
+.carousel .indicators {
+  position: absolute;
+  top: 52%;
+  height: var(--w-column);
+  width: min(1200px, 90vw);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  gap: 10px;
+}
+
+.carousel .indicators .number {
+  font-family: 'League Gothic', sans-serif;
+  font-size: 7vw;
+}
+
+.carousel .indicators ul {
+  display: flex;
+  gap: 10px;
+}
+
+.carousel .indicators ul li {
+  width: 50px;
+  height: 5px;
+  background-color: #659cdf;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.carousel .indicators ul li.active {
+  background-color: yellow;
+}

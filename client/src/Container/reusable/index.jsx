@@ -6,6 +6,7 @@ export const CustomButton = ({
   colorClass,
   onClick,
   size = "md",
+  disabled = false, // Thêm thuộc tính disabled
 }) => {
   const sizeClasses = {
     sm: "text-xs px-1.5 py-0.5",
@@ -17,16 +18,21 @@ export const CustomButton = ({
     md: "text-sm",
     lg: "text-base",
   };
+
   return (
     <button
-      className={`flex items-center gap-1 rounded-full cursor-pointer ${colorClass} text-white font-light ${sizeClasses[size]}`}
-      onClick={onClick}
+      className={`flex items-center gap-1 rounded-full cursor-pointer ${
+        disabled ? 'cursor-not-allowed opacity-50' : ''
+      } ${colorClass} text-white font-light ${sizeClasses[size]}`}
+      onClick={!disabled ? onClick : null} // Vô hiệu hóa onClick nếu disabled
+      disabled={disabled} // Đặt thuộc tính disabled cho button
     >
       <i className={`${iconClass} ${iconSizes[size]}`}></i>
       <span className="hidden sm:inline">{text}</span>
     </button>
   );
 };
+
 
 // Tùy chỉnh Tag
 export const Tag = ({ href, className, children }) => (
