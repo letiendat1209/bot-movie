@@ -44,6 +44,7 @@ function BilingualSubtitles() {
         <div className="mt-5 w-full overflow-hidden border-t dark:border-slate-700 s1024:mt-0 s1024:h-[360px] s1024:border s1280:h-[495px] s1366:h-[540px]">
             <div className="bilingual-subtitles mt-5 w-full border-t dark:border-slate-700 s1024:mt-0 s1024:h-[360px] s1024:border s1280:h-[495px] s1366:h-[540px]">
                 <div className="flex h-full max-w-full justify-between gap-2 rounded-lg pt-3 text-white dark:border-slate-700">
+                    
                     <div className="flex-1">
                         <div className="mb-2">English sub</div>
                         {subtitles.map((sub, index) => (
@@ -53,7 +54,6 @@ function BilingualSubtitles() {
                             </div>
                         ))}
                     </div>
-
                     <div className="flex-1">
                         <div className="mb-2">Vietnamese sub</div>
                         {subtitles.map((sub, index) => (

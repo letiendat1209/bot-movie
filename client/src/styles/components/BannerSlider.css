@@ -1,7 +1,14 @@
 .swiper-slide {
+  
 }
 
 .custom-pagination {
+  position: absolute;
+  bottom: 325px !important;
+  left: 162px !important;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
 }
 .swiper-button-prev,
 .swiper-button-next {

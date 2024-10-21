@@ -7,7 +7,7 @@ import 'plyr-react/plyr.css';
 function App() {
     return (
         <Router>
-            <div className="App bg-white dark:bg-slate-800">
+            <div className="App bg-white dark:bg-Black">
                 <Routes>
                     {publicRoutes.map((route, index) => {
                         const Page = route.component;

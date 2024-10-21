@@ -139,43 +139,48 @@ const movies = [
 ];
 
 import MovieSlider from '~/components/MovieSlider';
+import FilterSortPanel from '~/components/FilterSortPanel';
 
 const MovieFilter = () => {
     return (
         <div className="mx-4 mb-10 px-4 pt-20">
-            <div className="my-[30px] pl-[10px] pr-[10px] s1024:p-0">
-                <div className="genre scrollbar-hide relative flex snap-x snap-mandatory gap-2 overflow-x-auto s1024:grid s1024:grid-cols-10 s1280:grid-cols-12">
-                    <a
-                        href=""
-                        className="genre-item activated relative shrink-0 snap-start snap-always rounded bg-red-600 px-2 py-1 text-[12px] text-white dark:bg-teal-800"
-                    >
-                        Tất cả anime
-                    </a>
+            <div className="grid grid-cols-1 lg:grid-cols-[4fr_1fr] gap-8">
+                {/* Phần bên trái: Danh sách các phim */}
+                <div>
+                    <h1 className="mb-6 text-3xl font-bold text-cyan-200">Anime</h1>
+                    <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                        {movies.map((movie) => (
+                            <Link to={`/movie/${movie.id}`} key={movie.id}>
+                                <div className="group relative h-full w-full overflow-hidden rounded-lg shadow-lg transition-transform duration-300">
+                                    <img
+                                        className="h-full w-full transform object-cover transition-transform duration-500 group-hover:scale-110"
+                                        src={movie.image}
+                                        alt={movie.title}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                                    <div className="absolute bottom-4 left-4 right-4 text-left text-white">
+                                        <h3 className="line-clamp-2 text-lg font-semibold hover:text-cyan-200">
+                                            {movie.title}
+                                        </h3>
+                                        <p className="text-sm">
+                                            Season {movie.season} | Episode {movie.episode}
+                                        </p>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Phần bên phải: Filter và Sort */}
+                <div className="hidden lg:block">
+                    <FilterSortPanel />
                 </div>
             </div>
 
-            <MovieSlider movies={movies} speed={5000} />
-
-            {/* Danh sách các phim */}
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8">
-                {movies.map((movie) => (
-                    <Link to={`/movie/${movie.id}`} key={movie.id}>
-                        <div className="group relative h-full w-full overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
-                            <img
-                                className="h-full w-full transform object-cover transition-transform duration-500 group-hover:scale-110"
-                                src={movie.image}
-                                alt={movie.title}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
-                            <div className="absolute bottom-4 left-4 right-4 text-left text-white">
-                                <h3 className="line-clamp-2 text-lg font-semibold hover:text-cyan-200">{movie.title}</h3>
-                                <p className="text-sm">
-                                    Season {movie.season} | Episode {movie.episode}
-                                </p>
-                            </div>
-                        </div>
-                    </Link>
-                ))}
+            {/* Hiển thị FilterSortPanel phía dưới khi ở mobile */}
+            <div className="block lg:hidden mt-8">
+                <FilterSortPanel />
             </div>
         </div>
     );

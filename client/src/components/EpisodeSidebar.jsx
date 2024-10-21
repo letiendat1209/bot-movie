@@ -1,4 +1,5 @@
 import { NextTriangle } from '~/assets/icons'; // Import NextTriangle nếu là một component khác
+import '~/styles/components/BilingualSubtitles.css'; // Đảm bảo bạn có file CSS tương ứng
 
 const episodes = [
     {
@@ -66,18 +67,16 @@ const episodes = [
 const EpisodeSidebar = () => {
     return (
         <div className="mt-5 w-full overflow-hidden border-t dark:border-slate-700 s1024:mt-0 s1024:h-[360px] s1024:border s1280:h-[495px] s1366:h-[540px]">
-            <div className="player-sidebar-header flex h-12 items-center gap-4 overflow-hidden border-b leading-10 dark:border-slate-700 s1024:px-3">
-                <div className="tab-item tab-episode activated h-full cursor-pointer border-b-2 border-red-500 text-[12px] uppercase">
-                    Danh sách tập
-                </div>
-                <div className="tab-item tab-comment ml-auto h-full cursor-pointer border-red-500 text-[12px] uppercase">BÌNH LUẬN</div>
+            <div className="flex h-12 items-center gap-4 overflow-hidden border-b leading-10 dark:border-slate-700 s1024:px-3">
+                <div className="h-full cursor-pointer border-b-2 border-red-500 text-[12px] uppercase">Danh sách tập</div>
+                <div className="ml-auto h-full cursor-pointer border-red-500 text-[12px] uppercase">BÌNH LUẬN</div>
             </div>
 
             {/* Sidebar - Video List */}
-            <div className="player-sidebar-body body-episode relative overflow-hidden pb-3 text-[14px]">
-                <div className="episode-list-tool relative flex h-12 items-center gap-4 border-b dark:border-slate-700 s1024:px-3">
-                    <div className="episode-total h-5">Tổng số: {episodes.length} video</div>
-                    <div className="episode-select relative ml-auto flex h-5 items-center gap-1">
+            <div className="relative overflow-hidden pb-3 text-[14px]">
+                <div className="relative flex h-12 items-center gap-4 border-b dark:border-slate-700 s1024:px-3">
+                    <div className="h-5">Tổng số: {episodes.length} video</div>
+                    <div className="relative ml-auto flex h-5 items-center gap-1">
                         Tập
                         <input
                             className="h-full w-[100px] rounded border-0 bg-gray-200 pl-2 pr-5 text-[12px] outline-0 ring-0 focus:ring-0 dark:bg-slate-700"
@@ -87,12 +86,11 @@ const EpisodeSidebar = () => {
                     </div>
                 </div>
 
-                <div className="episode-list relative min-h-[200px] overflow-auto s1024:max-h-[268px] s1024:px-3 s1280:max-h-[403px] s1366:max-h-[448px]">
-                    {/* Tập */}
+                <div className="bilingual-subtitles mt-5 w-full border-t dark:border-slate-700 s1024:mt-0 s1024:h-[360px] s1024:border s1280:h-[495px] s1366:h-[540px]">
                     {episodes.map((episode) => (
                         <div
                             key={episode.id}
-                            className="group/episode episode-item episode-148916 activated mt-3 cursor-pointer overflow-hidden text-red-500 dark:text-teal-300"
+                            className="group/episode episode-item activated mt-3 cursor-pointer overflow-hidden text-red-500 dark:text-teal-300"
                         >
                             <a href="" className="flex w-full gap-3">
                                 <div className="relative h-[60px] w-[106px] shrink-0 overflow-hidden">

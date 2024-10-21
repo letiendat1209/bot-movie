@@ -96,7 +96,7 @@ function Sidebar({ isOpen, toggleSidebar }) {
 
                             {/* Phần 3 */}
                             <div className="space-y-2">
-                                <Link to="/#" className="flex items-center space-x-2 hover:text-cyan-500">
+                                <Link to="/pairs" className="flex items-center space-x-2 hover:text-cyan-500">
                                     <BookA className="h-5 w-5" />
                                     <span className="pl-2 font-light">Cặp câu song ngữ</span>
                                 </Link>

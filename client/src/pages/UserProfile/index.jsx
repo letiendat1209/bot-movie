@@ -68,7 +68,7 @@ function UserProfile() {
                 </div>
             </div>
             <div className="mt-20 text-center">
-                <h1 className="text-3xl font-semibold">Bột thích Coding</h1>
+                <h1 className="text-3xl font-semibold">Dat thích Code</h1>
                 <p className="text-gray-600">Người này lười, không để lại sở thích gì</p>
             </div>
             {/* Navigation Tabs */}

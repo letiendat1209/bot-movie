@@ -52,25 +52,25 @@ function Header() {
                 {/* Menu Items for larger screens */}
                 <nav className="hidden gap-2 md:flex">
                     <a
-                        href="#"
+                        href="/anime"
                         className="whitespace-nowrap rounded-full border border-gray-500 bg-transparent px-4 py-2 text-cyan-200 hover:text-cyan-500 dark:text-white"
                     >
                         Anime
                     </a>
                     <a
-                        href="#"
+                        href="/movie"
                         className="whitespace-nowrap rounded-full border border-gray-500 bg-transparent px-4 py-2 text-cyan-200 hover:text-cyan-500 dark:text-white"
                     >
                         Movie
                     </a>
                     <a
-                        href="#"
+                        href="/english-1-1"
                         className="whitespace-nowrap rounded-full border border-gray-500 bg-transparent px-4 py-2 text-cyan-200 hover:text-cyan-500 dark:text-white"
                     >
                         English 1-1
                     </a>
                     <a
-                        href="#"
+                        href="/rank"
                         className="whitespace-nowrap rounded-full border border-gray-500 bg-transparent px-4 py-2 text-cyan-200 hover:text-cyan-500 dark:text-white"
                     >
                         BXH

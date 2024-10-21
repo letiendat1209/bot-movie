@@ -28,9 +28,16 @@ export default {
                 default: '2px 2px 4px #000000',
             },
             colors: {
-                customLight: '#f9fafb', // Màu tùy chỉnh cho chế độ sáng
-                customDark: '#1c1c1e', // Màu tùy chỉnh cho chế độ tối ( màu đen tuyền)
-                customCyan: '#00bcd4', // Màu tùy chỉnh cho nút hay border
+                customBgLight: '#f9fafb', // Màu tùy chỉnh cho chế độ sáng
+                customBgDark: '#1c1c1e', // Màu tùy chỉnh cho chế độ tối ( màu đen tuyền)
+                // Black - white
+                Black: '#000000',
+                White: '#ffffff',
+                // NightFall Serenity
+                Nf1: '#444152',
+                Nf2: '#8E8AA5',
+                Nf3: '#CE4E4E6',
+                Nf4: '#CBCAD0',
             },
         },
     },
