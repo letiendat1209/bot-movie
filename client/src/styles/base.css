@@ -9,6 +9,8 @@
     --bg-color: rgb(243 244 246);
     --bg-color-dark: #0f172a;
     --text-color: rgb(9 9 11);
+    --collapse-w: 80px;
+    --not-collapse-w: 256px;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

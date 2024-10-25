@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { UserRound, UserRoundPen, Lock, Film, Heart, Eye, Power, BookA, Bell } from 'lucide-react'; // Import các icon cần dùng
+import { UserRound, UserRoundPen, Lock, Film, Heart, Eye, Power, BookA, Bell, ChartNoAxesColumn } from 'lucide-react'; // Import các icon cần dùng
 
 function Sidebar({ isOpen, toggleSidebar }) {
     const [activeTab, setActiveTab] = useState('Thông tin'); // Quản lý tab đang mở
@@ -99,6 +99,12 @@ function Sidebar({ isOpen, toggleSidebar }) {
                                 <Link to="/pairs" className="flex items-center space-x-2 hover:text-cyan-500">
                                     <BookA className="h-5 w-5" />
                                     <span className="pl-2 font-light">Cặp câu song ngữ</span>
+                                </Link>
+                            </div>
+                            <div className="space-y-2">
+                                <Link to="/admin/adminDashboard" className="flex items-center space-x-2 hover:text-cyan-500">
+                                    <ChartNoAxesColumn className="h-5 w-5" />
+                                    <span className="pl-2 font-light">Admin Page</span>
                                 </Link>
                             </div>
 

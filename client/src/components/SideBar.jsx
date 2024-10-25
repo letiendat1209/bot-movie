@@ -17,7 +17,6 @@ import {
     Settings,
     Palette,
 } from 'lucide-react';
-import '~/pages/Admin/AdminDashboard/AdminDashboard.css';
 
 export default function Sidebar() {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -25,8 +24,8 @@ export default function Sidebar() {
         {
             section: 'CONTENT MANAGEMENT',
             items: [
-                { title: 'Dashboard', icon: LayoutDashboard, link: '/dashboard' },
-                { title: 'Movies', icon: Film, link: '/movies' },
+                { title: 'Dashboard', icon: LayoutDashboard, link: '/admin/adminDashboard' },
+                { title: 'Movies', icon: Film, link: '/admin/movies' },
                 { title: 'Series', icon: Tv, link: '/series' },
                 { title: 'Add New Content', icon: PlusCircle, link: '/add-content' },
                 { title: 'Subtitles', icon: Subtitles, link: '/subtitles' },
@@ -65,7 +64,7 @@ export default function Sidebar() {
 
     return (
         <div
-            className={`fixed left-0 top-0 h-screen bg-[#1c1c1e] text-white shadow-xl transition-all duration-300 ease-in-out ${
+            className={`left-0 top-0 h-full bg-[#1c1c1e] text-white shadow-xl transition-all duration-300 ease-in-out ${
                 isCollapsed ? 'w-20' : 'w-64'
             }`}
         >
@@ -75,9 +74,11 @@ export default function Sidebar() {
                         <div className="h-6 w-6 text-white">🎬</div>
                     </div>
                     {!isCollapsed && (
-                        <span className="whitespace-nowrap text-xl font-bold tracking-tight">
-                            BỘT<span className="text-blue-400"> MOVIE</span>
-                        </span>
+                        <a href="/">
+                            <span className="whitespace-nowrap text-xl font-bold tracking-tight">
+                                BỘT<span className="text-blue-400"> MOVIE</span>
+                            </span>
+                        </a>
                     )}
                 </div>
                 <button
@@ -88,7 +89,7 @@ export default function Sidebar() {
                 </button>
             </div>
 
-            <div className="custom-scrollbar h-[calc(100vh-4rem)] overflow-y-auto">
+            <div className="custom-scrollbar h-[calc(100vh-6rem)] overflow-y-auto">
                 {menuItems.map((section, idx) => (
                     <div key={idx} className="py-4">
                         {!isCollapsed && (

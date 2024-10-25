@@ -68,14 +68,14 @@ function BannerSlider() {
                 <SwiperSlide key={index}>
                     <div className="relative">
                         <img src={item.image} alt="Slide 1" className="w-full" />
-                        <div className=" absolute top-1/4 left-20 text-white space-y-4 max-w-[460px]">
-                            <h2 className="text-4xl font-bold ">{item.title}</h2>
-                            <p className="hidden md:line-clamp-5 text-lg">{item.description}</p>
+                        <div className="absolute left-20 top-1/4 max-w-[460px] space-y-4 text-white">
+                            <h2 className="text-4xl font-bold">{item.title}</h2>
+                            <p className="hidden text-lg md:line-clamp-5">{item.description}</p>
                             <div className="flex space-x-4">
-                                <button className="bg-cyan-200 font-semibold text-black uppercase px-4 py-2 rounded-full">
+                                <button className="rounded-full bg-cyan-200 px-4 py-2 font-semibold uppercase text-black">
                                     start watching
                                 </button>
-                                <button className="bg-transparent border-2 border-white px-4 py-2 rounded-full">
+                                <button className="rounded-full border-2 border-white bg-transparent px-4 py-2">
                                     <i className="fas fa-bookmark text-orange-200"></i>
                                 </button>
                             </div>
@@ -85,7 +85,7 @@ function BannerSlider() {
             ))}
 
             {/* Pagination */}
-            <div className="custom-pagination swiper-pagination "></div>
+            <div className="custom-pagination swiper-pagination"></div>
         </Swiper>
     );
 }

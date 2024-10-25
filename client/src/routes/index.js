@@ -1,3 +1,6 @@
+import { AdminLayout } from '~/Container/Layouts';
+import AdminDashBoard from '~/pages/Admin/AdminDashboard';
+import Movies from '~/pages/Admin/Movies';
 import FAQ from '~/pages/FAQ';
 import Home from '~/pages/Home';
 import MovieFilter from '~/pages/MovieCategories';
@@ -18,7 +21,8 @@ const publicRoutes = [
     { path: '/pairs', component: Pairs },
 
     //test admin
-    // { path: '/admin', component: Admin },
+    { path: '/admin/adminDashboard', component: AdminDashBoard, layout: AdminLayout },
+    { path: '/admin/movies', component: Movies, layout: AdminLayout },
 ];
 const privateRoutes = [];
 

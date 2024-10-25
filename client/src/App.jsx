@@ -3,10 +3,12 @@ import { DefaultLayout } from '~/Container/Layouts';
 import { publicRoutes } from './routes';
 import { Fragment } from 'react';
 import 'plyr-react/plyr.css';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
     return (
         <Router>
+            <ScrollToTop />
             <div className="App bg-white dark:bg-Black">
                 <Routes>
                     {publicRoutes.map((route, index) => {

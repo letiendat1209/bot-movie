@@ -1,0 +1,10 @@
+/* Ẩn thanh cuộn nhưng vẫn cuộn được */
+.custom-scrollbar {
+    overflow-y: scroll;
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+}
