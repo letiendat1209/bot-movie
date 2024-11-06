@@ -1,132 +1,36 @@
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-const movies = [
-    {
-        id: 1,
-        title: 'Re:Zero : Trận chiến cuối cùng, người chiến thắng tất cả',
-        season: 3,
-        episode: 1,
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1OiiMz4VfZ9JQuMn0FXiHzncAWiDrtonc%3Dw500-h750&w=320&q=80',
-        rating: 8.5,
-        status: 'Ongoing',
-    },
-    {
-        id: 2,
-        title: 'Alya',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1zzn_ZUIIg1nJvo-6bJIzjfI_5alCDXzF%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 3,
-        title: 'Oshi no Ko',
-        season: 3,
-        episode: 1,
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1yglwAIqXFWw4iGv177w8PhARGlOcWZM0%3Dw500-h750&w=320&q=80',
-        rating: 8.5,
-        status: 'Ongoing',
-    },
-    {
-        id: 4,
-        title: 'Shikanoko',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1-D3cYD7lwJUSoF2vI6WzbAmfsSSsUTmd%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 5,
-        title: 'Failure Frame',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1-Id_HKy0yKvwDyuhw5Q5wWJx9V1pNURR%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 6,
-        title: 'Boku no Hero Academia',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1ymAvRy7DZh2Zs6HCYVpcM_artem5vP75%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 7,
-        title: 'Shangri-La Frontier',
-        season: 2,
-        episode: 1,
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1vzLn-OVblgIj_Om6fWCLIdcvyVzpLtnp%3Dw531-h7500&w=320&q=80',
-        rating: 8.5,
-        status: 'Ongoing',
-    },
-    {
-        id: 8,
-        title: 'Konosuba',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1zgxTRC3PCOx6T7AMnUmazdHm0CeNctd9%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 9,
-        title: 'Classroom Of The Elite',
-        season: 3,
-        episode: 1,
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1ziYkWMz7Lyzh1yDb2Pof1wXBx1ga807o%3Dw500-h750&w=320&q=80',
-        rating: 8.5,
-        status: 'Ongoing',
-    },
-    {
-        id: 4,
-        title: 'Frieren',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1z3EMGUORpisbl-aXqKXOQAMEhLdzgVN0%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 5,
-        title: 'Chainsaw Man',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F10DCvGIKtkVbwtX7jCrbdcOChTqUF7e9L%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 6,
-        title: 'Wistoria',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1-46_oZH36vlofSB_Viu53eYNCbtXM63G%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    // Thêm các phim khác
-];
+import { getAllMovies } from '~/services/movies';
 
 function MovieList({ title }) {
+    const [movies, setMovies] = useState([]);
+
+    useEffect(() => {
+        const fetchMovies = async () => {
+            try {
+                const data = await getAllMovies();
+                setMovies(data);
+            } catch (error) {
+                console.error('Error fetching movies:', error);
+            }
+        };
+
+        fetchMovies();
+    }, []);
     return (
         <>
-            <h2 className="uppercase text-3xl font-bold mb-4 text-cyan-200">{title}</h2>
-            <h3 className="text-white mb-4">Find the best new and continuing simulcasts here!</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {movies.map((movie, index) => (
-                    <Link to={`/movie`} key={index}>
-                        <div key={movie.id} className="w-full h-full relative group overflow-hidden">
-                            <div className="relative w-full h-full cursor-pointer">
+            <h2 className="mb-4 text-3xl font-bold uppercase text-cyan-200">{title}</h2>
+            <h3 className="mb-4 text-white">Find the best new and continuing simulcasts here!</h3>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                {movies.map((movie) => (
+                    <Link to={`/movies/${movie.id}`} key={movie.id}>
+                        <div className="group relative h-full w-full overflow-hidden">
+                            <div className="relative h-full w-full cursor-pointer">
                                 {/* Ảnh */}
                                 <img
-                                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                                    src={movie.image}
+                                    className="h-full w-full transform object-cover transition-transform duration-500 group-hover:scale-110"
+                                    src={movie.thumbnail}
                                     alt={movie.title}
                                 />
 
@@ -134,18 +38,23 @@ function MovieList({ title }) {
                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
 
                                 {/* Rating */}
-                                <div className="absolute top-2 left-2 bg-yellow-400 text-black px-2 py-1 text-xs font-bold rounded">
+                                <div className="absolute left-2 top-2 rounded bg-yellow-400 px-2 py-1 text-xs font-bold text-black">
                                     ★ {movie.rating}
                                 </div>
 
                                 {/* Tiêu đề và nội dung */}
                                 <div className="absolute bottom-4 mx-2 flex flex-col items-start space-y-2">
-                                    <p className="uppercase text-sm text-white font-bold text-shadow hover:text-cyan-200 line-clamp-2">
+                                    <p className="line-clamp-2 text-sm font-bold uppercase text-white text-shadow hover:text-cyan-200">
                                         {movie.title}
                                     </p>
-                                    <p className="text-sm text-white text-shadow hover:text-yellow-300">
-                                        Season {movie.season} | Episode {movie.episode}
-                                    </p>
+                                    {movie.seasons.length > 0 ? (
+                                        <p className="text-sm text-white text-shadow hover:text-yellow-300">
+                                            Season {movie.seasons[0].season_number} | Episode{' '}
+                                            {movie.seasons[0].episodes[0]?.episode_number || '1'}
+                                        </p>
+                                    ) : (
+                                        <p className="text-sm text-white text-shadow hover:text-yellow-300">Season 1 | Episode 1</p>
+                                    )}
                                 </div>
                             </div>
                         </div>

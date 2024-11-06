@@ -1,11 +1,37 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { UserRound, UserRoundPen, Lock, Film, Heart, Eye, Power, BookA, Bell, ChartNoAxesColumn } from 'lucide-react'; // Import các icon cần dùng
+import { Link, useNavigate } from 'react-router-dom';
+import { UserRound, UserRoundPen, Lock, Film, Heart, Eye, Power, BookA, ChartNoAxesColumn } from 'lucide-react';
 
 function Sidebar({ isOpen, toggleSidebar }) {
-    const [activeTab, setActiveTab] = useState('Thông tin'); // Quản lý tab đang mở
+    const [activeTab, setActiveTab] = useState('Thông tin');
+    const navigate = useNavigate();
+    
+    // Đọc user data an toàn hơn
+    const getUserData = () => {
+        try {
+            const storedUser = localStorage.getItem('user');
+            return storedUser ? JSON.parse(storedUser) : null;
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            return null;
+        }
+    };
+
+    const userData = getUserData();
+
+    const logout = () => {
+        localStorage.removeItem('user');
+        navigate('/auth');
+    };
+
+    // Lấy tên người dùng an toàn
+    const getUserName = () => {
+        if (!userData) return 'Người dùng';
+        return (userData.first_name && userData.last_name) 
+            ? `${userData.first_name} ${userData.last_name}`
+            : 'Người dùng';
+    };
 
     return (
         <>
@@ -14,7 +40,7 @@ function Sidebar({ isOpen, toggleSidebar }) {
                 className={`fixed inset-0 z-40 h-screen bg-black bg-opacity-50 transition-opacity ${
                     isOpen ? 'visible opacity-100' : 'invisible opacity-0'
                 }`}
-                onClick={toggleSidebar} // Khi ấn vào overlay sẽ đóng sidebar
+                onClick={toggleSidebar}
             ></div>
 
             <div
@@ -31,9 +57,12 @@ function Sidebar({ isOpen, toggleSidebar }) {
                             src="https://avatarfiles.alphacoders.com/375/375863.jpeg"
                             alt="Avatar"
                             className="mr-6 h-10 w-10 rounded-full"
+                            onError={(e) => {
+                                e.target.src = "https://avatarfiles.alphacoders.com/375/375863.jpeg";
+                            }}
                         />
                     </div>
-                    <h2 className="text-md my-4 font-semibold">Chào datvipprono1!</h2>
+                    <h2 className="text-md my-4 font-semibold">Chào {getUserName()}</h2>
 
                     {/* Tabs */}
                     <div className="flex space-x-4">
@@ -101,21 +130,25 @@ function Sidebar({ isOpen, toggleSidebar }) {
                                     <span className="pl-2 font-light">Cặp câu song ngữ</span>
                                 </Link>
                             </div>
-                            <div className="space-y-2">
-                                <Link to="/admin/adminDashboard" className="flex items-center space-x-2 hover:text-cyan-500">
-                                    <ChartNoAxesColumn className="h-5 w-5" />
-                                    <span className="pl-2 font-light">Admin Page</span>
-                                </Link>
-                            </div>
+
+                            {/* Admin Page - chỉ hiển thị nếu user có role admin */}
+                            {userData?.role === 'admin' && (
+                                <div className="space-y-2">
+                                    <a href="/admin/adminDashboard" className="flex items-center space-x-2 hover:text-cyan-500">
+                                        <ChartNoAxesColumn className="h-5 w-5" />
+                                        <span className="pl-2 font-light">Admin Page</span>
+                                    </a>
+                                </div>
+                            )}
 
                             <hr className="border-gray-500" />
 
                             {/* Phần 4 */}
                             <div className="space-y-2">
-                                <Link to="/logout" className="mt-6 flex items-center space-x-2 hover:text-cyan-500">
+                                <button onClick={logout} className="mt-6 flex items-center space-x-2 hover:text-cyan-500">
                                     <Power className="h-5 w-5" />
                                     <span className="pl-2 font-light">Đăng xuất</span>
-                                </Link>
+                                </button>
                             </div>
                         </nav>
                     )}
@@ -123,7 +156,6 @@ function Sidebar({ isOpen, toggleSidebar }) {
                     {activeTab === 'Thông báo' && (
                         <div className="space-y-2">
                             <p>Chưa có thông báo mới</p>
-                            {/* Danh sách thông báo cho zô đây */}
                         </div>
                     )}
                 </div>

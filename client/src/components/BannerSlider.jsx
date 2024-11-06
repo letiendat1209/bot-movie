@@ -13,10 +13,10 @@ const data = [
         image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F17ovUftCzLgf-rNnn5NV9KCqIJg1pfI1j%3Dw3840&w=1920&q=80',
     },
     {
-        title: 'Makoto Misumi',
+        title: 'DandaDan',
         description:
-            "Makoto Misumi was just an average teenager who suddenly was summoned to another world as a hero. But the goddess of this world called him ugly and took his hero status away from him, then sent him to the ends of the world. He meets dragons, spiders, orcs, dwarves, and many other non-human races in the wastelands. Makoto manages to show promise in the use of magic and fighting, which he wouldn't have been able to do in his former world.He has numerous encounters, but will he be able to survive this new world ? A fantasy where a guy who gods and humanity had abandoned tries to reset his life in this new world is about to begin!",
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1lrekDo5SUq73TkpcmcLIZYtQ9hEWcD5Z%3Dw3840&w=1920&q=80',
+            "When high schooler Momo, from a family of spirit mediums, first meets her classmate Okarun, an occult geek, they argue—Momo believes in ghosts but denies aliens, and Okarun believes in aliens but denies ghosts. from a family of spirit mediums, first meets her classmate Okarun,",
+        image: 'https://ninoidol.vercel.app/api/image-proxy?imageUrl=https%3A%2F%2Fres.cloudinary.com%2Fdkyjtpdpr%2Fimage%2Fupload%2Fw_1536%2Cf_avif%2Cq_75%2Fv1729274328%2Fpc_r4fayr.webp',
     },
     {
         title: 'Failure Flame',

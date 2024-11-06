@@ -13,19 +13,22 @@ import Pairs from '~/pages/UserProfile/pairs';
 
 const publicRoutes = [
     { path: '/', component: Home },
-    { path: '/movie', component: MoviePlayer },
     { path: '/profile', component: UserProfile }, // /profile:id
     { path: '/search', component: Search },
     { path: '/anime', component: MovieFilter },
     { path: '/faq', component: FAQ },
-    { path: '/movieDetail', component: MovieDetail },
+    { path: '/movies/:idMovie', component: MovieDetail },
     { path: '/pairs', component: Pairs },
     { path: '/auth', component: Auth, layout: null },
 
     //test admin
-    { path: '/admin/adminDashboard', component: AdminDashBoard, layout: AdminLayout },
-    { path: '/admin/movies', component: Movies, layout: AdminLayout },
 ];
-const privateRoutes = [];
+const privateRoutes = [
+    { path: '/episode/:id', component: MoviePlayer, roleRequired: ['user', 'admin'] },
+    
+    //
+    { path: '/admin/adminDashboard', component: AdminDashBoard, layout: AdminLayout, roleRequired: ['admin'] },
+    { path: '/admin/movies', component: Movies, layout: AdminLayout, roleRequired: ['admin'] },
+];
 
 export { publicRoutes, privateRoutes };

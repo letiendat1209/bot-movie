@@ -1,235 +1,385 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useState, useRef, useEffect } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ReactPlayer from 'react-player';
-import '~/styles/components/CustomReactPlayer.css';
-
 import {
-    Play,
-    Pause,
-    SkipBack,
-    SkipForward,
-    Volume2,
-    VolumeX,
-    Maximize,
-    Minimize,
-    Settings,
-    ChevronsRight,
-    ChevronsLeft,
-    X,
-    PictureInPicture2,
+    Play, Pause, SkipBack, SkipForward,
+    Volume2, VolumeX, Maximize, Minimize,
+    Settings, X
 } from 'lucide-react';
 
-const CustomVideoPlayerV2 = ({ url }) => {
-    const [playing, setPlaying] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const [volume, setVolume] = useState(1);
-    const [muted, setMuted] = useState(false);
-    const [fullscreen, setFullscreen] = useState(false);
-    const [showSettings, setShowSettings] = useState(false);
-    const [playbackRate, setPlaybackRate] = useState(1);
-    const [duration, setDuration] = useState(0);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [showVolumeSlider, setShowVolumeSlider] = useState(false);
-    const [buffered, setBuffered] = useState(0);
+const PLAYBACK_SPEEDS = [0.25, 0.5, 1, 1.5, 2];
+const SEEK_SECONDS = 10;
+const VOLUME_STEP = 0.01;
+const CONTROLS_HIDE_DELAY = 2000; // 2 seconds delay before hiding controls
 
+const CustomVideoPlayerV2 = ({ url }) => {
+    // Player state management
+    const [playerState, setPlayerState] = useState({
+        playing: false,
+        progress: 0,
+        volume: 1,
+        muted: false,
+        fullscreen: false,
+        showSettings: false,
+        playbackRate: 1,
+        duration: 0,
+        currentTime: 0,
+        buffered: 0
+    });
+
+    // UI state management
+    const [showControls, setShowControls] = useState(false);
+    const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+    const [isHovering, setIsHovering] = useState(false);
+
+    // Refs
     const playerRef = useRef(null);
     const containerRef = useRef(null);
     const progressRef = useRef(null);
-    const volumeSliderRef = useRef(null);
+    const volumeSliderTimeoutRef = useRef(null);
+    const controlsTimeoutRef = useRef(null);
 
-    const handlePlayPause = () => setPlaying(!playing);
+    // Controls visibility management
+    const resetControlsTimeout = useCallback(() => {
+        if (controlsTimeoutRef.current) {
+            clearTimeout(controlsTimeoutRef.current);
+        }
 
-    const handleRewind = () => {
-        const time = playerRef.current.getCurrentTime();
-        playerRef.current.seekTo(Math.max(time - 10, 0));
-    };
+        setShowControls(true);
 
-    const handleForward = () => {
-        const time = playerRef.current.getCurrentTime();
-        playerRef.current.seekTo(Math.min(time + 10, duration));
-    };
+        // Always set timeout to hide controls
+        controlsTimeoutRef.current = setTimeout(() => {
+            // Only hide if not in settings menu
+            if (!playerState.showSettings) {
+                setShowControls(false);
+                setShowVolumeSlider(false);
+            }
+        }, CONTROLS_HIDE_DELAY);
+    }, [playerState.showSettings]);
 
-    const handleProgress = (state) => {
-        setProgress(state.played);
-        setCurrentTime(state.playedSeconds);
-        setBuffered(state.loaded);
-    };
+    const handleMouseMove = useCallback(() => {
+        resetControlsTimeout();
+    }, [resetControlsTimeout]);
 
-    const handleSeek = (e) => {
+    const handleMouseEnter = useCallback(() => {
+        setIsHovering(true);
+        setShowControls(true);
+    }, []);
+
+    const handleMouseLeave = useCallback(() => {
+        setIsHovering(false);
+        // Always hide controls when mouse leaves
+        if (!playerState.showSettings) {
+            setShowControls(false);
+            setShowVolumeSlider(false);
+        }
+    }, [playerState.showSettings]);
+
+    // Player control handlers
+    const handlePlayPause = useCallback(() => {
+        setPlayerState(prev => ({ ...prev, playing: !prev.playing }));
+        resetControlsTimeout();
+    }, [resetControlsTimeout]);
+
+    const handleTimeSeek = useCallback((direction) => {
+        if (!playerRef.current) return;
+        
+        const currentTime = playerRef.current.getCurrentTime();
+        const newTime = direction === 'backward' 
+            ? Math.max(currentTime - SEEK_SECONDS, 0)
+            : Math.min(currentTime + SEEK_SECONDS, playerState.duration);
+            
+        playerRef.current.seekTo(newTime);
+        resetControlsTimeout();
+    }, [playerState.duration, resetControlsTimeout]);
+
+    const handleProgress = useCallback((state) => {
+        setPlayerState(prev => ({
+            ...prev,
+            progress: state.played,
+            currentTime: state.playedSeconds,
+            buffered: state.loaded
+        }));
+    }, []);
+
+    const handleSeek = useCallback((e) => {
+        if (!progressRef.current || !playerRef.current) return;
+
         const bounds = progressRef.current.getBoundingClientRect();
         const percent = (e.clientX - bounds.left) / bounds.width;
         playerRef.current.seekTo(percent);
-    };
+        resetControlsTimeout();
+    }, [resetControlsTimeout]);
 
-    const toggleMute = () => setMuted(!muted);
-
-    const handleVolumeChange = (e) => {
+    const handleVolumeChange = useCallback((e) => {
         const newVolume = parseFloat(e.target.value);
-        setVolume(newVolume);
-        setMuted(newVolume === 0);
-    };
+        setPlayerState(prev => ({
+            ...prev,
+            volume: newVolume,
+            muted: newVolume === 0
+        }));
+        resetControlsTimeout();
+    }, [resetControlsTimeout]);
 
-    const toggleFullscreen = () => {
-        if (!document.fullscreenElement) {
-            containerRef.current.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
-    };
+    const toggleMute = useCallback(() => {
+        setPlayerState(prev => ({ ...prev, muted: !prev.muted }));
+        resetControlsTimeout();
+    }, [resetControlsTimeout]);
 
-    const toggleSettings = () => setShowSettings(!showSettings);
-
-    useEffect(() => {
-        const handleFullscreenChange = () => {
-            setFullscreen(!!document.fullscreenElement);
-        };
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    // Fullscreen management
+    const handleFullscreenChange = useCallback(() => {
+        setPlayerState(prev => ({
+            ...prev,
+            fullscreen: !!document.fullscreenElement
+        }));
     }, []);
 
+    const toggleFullscreen = useCallback(async () => {
+        try {
+            if (!document.fullscreenElement && containerRef.current) {
+                await containerRef.current.requestFullscreen();
+            } else if (document.exitFullscreen) {
+                await document.exitFullscreen();
+            }
+        } catch (error) {
+            console.error('Fullscreen error:', error);
+        }
+        resetControlsTimeout();
+    }, [resetControlsTimeout]);
+
+    // Cleanup effects
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (volumeSliderRef.current && !volumeSliderRef.current.contains(event.target)) {
-                setShowVolumeSlider(false);
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            if (controlsTimeoutRef.current) {
+                clearTimeout(controlsTimeoutRef.current);
+            }
+            if (volumeSliderTimeoutRef.current) {
+                clearTimeout(volumeSliderTimeoutRef.current);
             }
         };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    }, [handleFullscreenChange]);
 
-    const formatTime = (timeInSeconds) => {
+    // Time formatting helper
+    const formatTime = useCallback((timeInSeconds) => {
         const minutes = Math.floor(timeInSeconds / 60);
         const seconds = Math.floor(timeInSeconds % 60);
-        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    };
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }, []);
 
+    // Control buttons configuration
     const controlButtonsLeft = [
-        // { icon: <ChevronsLeft size={20} />, onClick: () => alert('Nút chuyển tập trước'), label: 'Back' },
-        { icon: <SkipBack size={20} />, onClick: handleRewind, label: 'Backward video' },
-        { icon: playing ? <Pause size={20} /> : <Play size={20} />, onClick: handlePlayPause, label: 'Play/Pause' },
-        { icon: <SkipForward size={20} />, onClick: handleForward, label: 'Forward' },
-        // { icon: <ChevronsRight size={20} />, onClick: () => alert('Nút chuyển tập tiếp theo'), label: 'Next video' },
         {
-            icon: muted ? <VolumeX size={20} /> : <Volume2 size={20} />,
-            onClick: () => setShowVolumeSlider(!showVolumeSlider),
-            label: 'Volume',
+            icon: <SkipBack size={20} />,
+            onClick: () => handleTimeSeek('backward'),
+            label: 'Tua lại 10 giây'
         },
+        {
+            icon: playerState.playing ? <Pause size={20} /> : <Play size={20} />,
+            onClick: handlePlayPause,
+            label: playerState.playing ? 'Tạm dừng' : 'Phát'
+        },
+        {
+            icon: <SkipForward size={20} />,
+            onClick: () => handleTimeSeek('forward'),
+            label: 'Tua đi 10 giây'
+        },
+        {
+            icon: playerState.muted ? <VolumeX size={20} /> : <Volume2 size={20} />,
+            onClick: () => {
+                toggleMute();
+                setShowVolumeSlider(prev => !prev);
+            },
+            label: playerState.muted ? 'Bật âm thanh' : 'Tắt âm thanh'
+        }
     ];
 
     const controlButtonsRight = [
-        { icon: <Settings size={20} />, onClick: toggleSettings, label: 'Settings' },
-        { icon: fullscreen ? <Minimize size={20} /> : <Maximize size={20} />, onClick: toggleFullscreen, label: 'Fullscreen' },
+        {
+            icon: <Settings size={20} />,
+            onClick: () => {
+                setPlayerState(prev => ({ ...prev, showSettings: !prev.showSettings }));
+                resetControlsTimeout();
+            },
+            label: 'Cài đặt'
+        },
+        {
+            icon: playerState.fullscreen ? <Minimize size={20} /> : <Maximize size={20} />,
+            onClick: toggleFullscreen,
+            label: playerState.fullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'
+        }
     ];
 
     return (
-        <div ref={containerRef} className="relative aspect-video bg-black">
+        <div 
+            ref={containerRef} 
+            className="relative aspect-video bg-black"
+            onMouseMove={handleMouseMove}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
             <ReactPlayer
                 ref={playerRef}
                 url={url}
                 width="100%"
                 height="100%"
-                playing={playing}
-                volume={volume}
-                muted={muted}
-                playbackRate={playbackRate}
+                playing={playerState.playing}
+                volume={playerState.volume}
+                muted={playerState.muted}
+                playbackRate={playerState.playbackRate}
                 onProgress={handleProgress}
-                onDuration={setDuration}
+                onDuration={(duration) => setPlayerState(prev => ({ ...prev, duration }))}
+                onError={(error) => console.error('Player error:', error)}
+                config={{
+                    file: {
+                        attributes: {
+                            controlsList: 'nodownload',
+                            onContextMenu: (e) => e.preventDefault()
+                        }
+                    }
+                }}
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-2">
-                <div className="mb-2 flex items-center justify-between space-x-4">
-                    <div className="flex items-center space-x-4">
-                        {controlButtonsLeft.map((button, index) => (
-                            <button
-                                key={index}
-                                onClick={button.onClick}
-                                className="text-white transition-colors hover:text-blue-500"
-                                title={button.label}
-                            >
-                                {button.icon}
-                            </button>
-                        ))}
-                        <span className="mr-[2px] text-xs text-white">
-                            {formatTime(currentTime)} / {formatTime(duration)}
-                        </span>
-                    </div>
-                    <div className="flex-1">
-                        <div
-                            ref={progressRef}
-                            className="relative h-2 w-full cursor-pointer rounded-full bg-gray-800 shadow-md transition-transform duration-500 hover:shadow-xl"
-                            onClick={handleSeek}
-                        >
-                            <div
-                                className="absolute left-0 top-0 h-full rounded-full bg-gray-500 transition-all duration-500 ease-in-out"
-                                style={{ width: `${buffered * 100}%` }}
-                            />
-                            <div
-                                className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-teal-400 via-blue-500 to-indigo-600 transition-all duration-500 ease-in-out"
-                                style={{ width: `${progress * 100}%` }}
-                            />
-                        </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                        <span className="text-sm text-white">{playbackRate}x</span>
-                        {controlButtonsRight.map((button, index) => (
-                            <button
-                                key={index}
-                                onClick={button.onClick}
-                                className="text-white transition-colors hover:text-blue-500"
-                                title={button.label}
-                            >
-                                {button.icon}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-                {showVolumeSlider && (
-                    <div className="absolute bottom-full left-[126px] -translate-x-1/2 transform rounded bg-transparent p-2">
-                        <input
-                            type="range"
-                            min={0}
-                            max={1}
-                            step={0.01}
-                            value={volume}
-                            onChange={handleVolumeChange}
-                            style={{
-                                writingMode: 'vertical-lr',
-                                direction: 'rtl',
-                            }}
-                        />
-                    </div>
-                )}
-            </div>
-            {showSettings && (
-                <div className="absolute bottom-[55px] right-[10px] z-10 select-none bg-black bg-opacity-50 p-2.5 pr-5 transition-[bottom] duration-500">
-                    <button onClick={toggleSettings} className="absolute right-2 top-2 cursor-pointer text-white">
-                        <X size={25} />
-                    </button>
-                    <div className="mb-4 flex items-center">
-                        <label className="pr-[50px] text-white">Máy chủ</label>
-                        <span className="mr-1 cursor-pointer rounded border border-white px-4 py-1 text-sm text-white">SG</span>
-                        <span className="mr-1 cursor-pointer rounded px-4 py-1 text-sm text-white">YOUTUBE</span>
-                        <span className="mr-1 cursor-pointer rounded px-4 py-1 text-sm text-white">ADS</span>
-                    </div>
-                    <div className="mb-4 flex items-center">
-                        <label className="pr-[50px] text-white">Chất lượng</label>
-                        <div className="flex space-x-2">
-                            <span className="mr-1 cursor-pointer rounded px-4 py-1 text-sm text-white">Auto</span>
-                            <span className="mr-1 cursor-pointer rounded px-4 py-1 text-sm text-white">480p</span>
-                            <span className="mr-1 cursor-pointer rounded px-4 py-1 text-sm text-white">
-                                720p <sup className="text-red-500">HD</sup>
+
+            {/* Controls overlay */}
+            <div 
+                className={`absolute bottom-0 left-0 right-0 transition-opacity duration-200 ${
+                    showControls ? 'opacity-100' : 'opacity-0'
+                } ${!showControls && 'pointer-events-none'}`}
+            >
+                <div className="bg-gradient-to-t from-black/90 to-transparent p-2">
+                    {/* Progress bar */}
+                    <div className="mb-2 flex items-center justify-between space-x-4">
+                        <div className="flex items-center space-x-4">
+                            {controlButtonsLeft.map((button, index) => (
+                                <button
+                                    key={index}
+                                    onClick={button.onClick}
+                                    className="text-white transition-colors hover:text-blue-500"
+                                    title={button.label}
+                                    aria-label={button.label}
+                                >
+                                    {button.icon}
+                                </button>
+                            ))}
+                            <span className="mr-[2px] text-xs text-white">
+                                {formatTime(playerState.currentTime)} / {formatTime(playerState.duration)}
                             </span>
                         </div>
+
+                        {/* Progress bar */}
+                        <div className="flex-1">
+                            <div
+                                ref={progressRef}
+                                className="relative h-2 w-full cursor-pointer rounded-full bg-gray-800"
+                                onClick={handleSeek}
+                                role="slider"
+                                aria-label="Video progress"
+                                aria-valuemin={0}
+                                aria-valuemax={100}
+                                aria-valuenow={playerState.progress * 100}
+                            >
+                                <div
+                                    className="absolute left-0 top-0 h-full rounded-full bg-gray-500 transition-all"
+                                    style={{ width: `${playerState.buffered * 100}%` }}
+                                />
+                                <div
+                                    className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all"
+                                    style={{ width: `${playerState.progress * 100}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Right controls */}
+                        <div className="flex items-center space-x-4">
+                            <span className="text-sm text-white">{playerState.playbackRate}x</span>
+                            {controlButtonsRight.map((button, index) => (
+                                <button
+                                    key={index}
+                                    onClick={button.onClick}
+                                    className="text-white transition-colors hover:text-blue-500"
+                                    title={button.label}
+                                    aria-label={button.label}
+                                >
+                                    {button.icon}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                    <div className="flex items-center">
-                        <label className="pr-[50px] text-white">Tốc độ</label>
-                        <div className="flex space-x-2">
-                            {[0.25, 0.5, 1, 1.5, 2].map((speed) => (
+
+                    {/* Volume slider */}
+                    {showVolumeSlider && (
+                        <div 
+                            className="absolute bottom-full left-[126px] -translate-x-1/2 transform rounded bg-black/50 p-2"
+                            onMouseEnter={() => {
+                                setShowControls(true);
+                                if (controlsTimeoutRef.current) {
+                                    clearTimeout(controlsTimeoutRef.current);
+                                }
+                            }}
+                            onMouseLeave={() => {
+                                setShowVolumeSlider(false);
+                                resetControlsTimeout();
+                            }}
+                        >
+                            <input
+                                type="range"
+                                min={0}
+                                max={1}
+                                step={VOLUME_STEP}
+                                value={playerState.volume}
+                                onChange={handleVolumeChange}
+                                className="h-24"
+                                style={{
+                                    writingMode: 'vertical-lr',
+                                    direction: 'rtl'
+                                }}
+                                aria-label="Volume control"
+                            />
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Settings panel */}
+            {playerState.showSettings && (
+                <div 
+                    className="absolute bottom-[55px] right-[10px] z-10 rounded-lg bg-black/90 p-4"
+                    onMouseEnter={() => {
+                        setShowControls(true);
+                        if (controlsTimeoutRef.current) {
+                            clearTimeout(controlsTimeoutRef.current);
+                        }
+                    }}
+                    onMouseLeave={() => {
+                        setPlayerState(prev => ({ ...prev, showSettings: false }));
+                        resetControlsTimeout();
+                    }}
+                >
+                    <button 
+                        onClick={() => setPlayerState(prev => ({ ...prev, showSettings: false }))}
+                        className="absolute right-2 top-2 text-white hover:text-blue-500"
+                        aria-label="Đóng cài đặt"
+                    >
+                        <X size={20} />
+                    </button>
+
+                    {/* Playback speed selection */}
+                    <div className="mb-4">
+                        <label className="mb-2 block text-white">Tốc độ phát</label>
+                        <div className="flex flex-wrap gap-2">
+                            {PLAYBACK_SPEEDS.map((speed) => (
                                 <button
                                     key={speed}
-                                    onClick={() => setPlaybackRate(speed)}
-                                    className={`cursor-pointer rounded border px-2 py-1 ${
-                                        playbackRate === speed ? 'border-red-600 text-red-600' : 'border-white text-white'
+                                    onClick={() => {
+                                        setPlayerState(prev => ({ ...prev, playbackRate: speed }));
+                                        resetControlsTimeout();
+                                    }}
+                                    className={`rounded border px-3 py-1 text-sm transition-colors ${
+                                        playerState.playbackRate === speed
+                                            ? 'border-blue-500 text-blue-500'
+                                            : 'border-white text-white hover:border-blue-500 hover:text-blue-500'
                                     }`}
                                 >
                                     {speed}x

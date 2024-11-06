@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import BilingualSubtitles from '~/components/BilingualSubtitles';
 import CustomVideoPlayerV2 from '~/components/CustomVideoPlayerV2';
 
@@ -7,7 +8,9 @@ import { CustomButton, ImageWithOverlay, GenreSection, SubGroupSection, Descript
 import EpisodeSidebar from '~/components/EpisodeSidebar';
 import '~/styles/components/MovieDetail.css';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { getEpisodeById } from '~/services/episodes';
 function MoviePlayer() {
     const [showBilingualTab, setShowBilingualTab] = useState(false);
 
@@ -20,21 +23,33 @@ function MoviePlayer() {
         exit: { opacity: 0, x: -20 },
     };
 
+    const { id } = useParams();
+    const [episode, setEpisode] = useState(null);
+
+    useEffect(() => {
+        const fetchEpisode = async () => {
+            try {
+                const data = await getEpisodeById(id);
+                setEpisode(data);
+            } catch (error) {
+                console.error('There was an error fetching the Episode data!', error);
+            }
+        };
+        fetchEpisode();
+    }, [id]);
     return (
         <div className="pt-[60px] dark:bg-slate-800 dark:text-gray-400 s360:px-[0px] s375:px-[0px] s412:px-[0px] s480:px-[0px] s640:px-[0px] s800:px-[0px] s900:px-[40px] s1024:px-[40px] s1280:px-[40px] s1366:px-[40px]">
             {/* Main Content */}
             <div className="mt-[20px] gap-2 px-[10px] s1024:flex s1024:gap-3 s1024:px-0">
                 {/* Video Player */}
                 <div className="w-full shrink-0 s1024:w-[640px] s1280:w-[880px] s1366:w-[960px]">
-                    <CustomVideoPlayerV2 url="https://vimeo.com/1016909521" />
+                    <CustomVideoPlayerV2 url={episode?.data.video_url} />
 
                     <div className="mb-2 mt-4">
-                        <h1 className="film-info-title text-[16px] uppercase s768:text-[18px] s1024:text-[20px]">
-                            CON LỢN VÀ CÔ GÁI: 100-NGÀY LÀM LỢN TẬP 1
-                        </h1>
+                        <h1 className="film-info-title text-[16px] uppercase s768:text-[18px] s1024:text-[20px]"> {episode?.data.title}</h1>
                     </div>
                     <div className="flex items-center justify-between s1024:block">
-                        <span className="inline-block text-[14px] font-light s1024:mb-2">92,380 lượt xem</span>
+                        <span className="inline-block text-[14px] font-light s1024:mb-2">{episode?.data.movie_total_view} lượt xem</span>
                         <div className="flex gap-2">
                             {/* Nút Thích */}
                             <CustomButton
@@ -87,7 +102,7 @@ function MoviePlayer() {
                             transition={{ duration: 0.3 }}
                             className="w-full"
                         >
-                            {showBilingualTab ? <BilingualSubtitles /> : <EpisodeSidebar />}
+                            {showBilingualTab ? <BilingualSubtitles /> : <EpisodeSidebar seasonId={episode?.data.season_id} movieId={episode?.data.movie_id} />}
                         </motion.div>
                     </AnimatePresence>
                 </div>
@@ -97,13 +112,13 @@ function MoviePlayer() {
                     <div className="w-full s1024:w-[640px] s1280:w-[880px] s1366:w-[960px]">
                         <div className="mb-5 w-full gap-2 overflow-hidden s640:gap-3 s768:flex">
                             <ImageWithOverlay
-                                src="https://s199.imacdn.com/vg/2024/07/04/d86acdea3895fcc4_ddd0d6d63d32dcec_48167172008078633.jpg"
-                                alt=""
+                                src={episode?.data?.movie_poster}
+                                alt={episode?.data?.title}
                                 overlayText="24 Tập"
                             />
                             <span className="block text-[14px] font-light s768:hidden">Thể loại:</span>
                             <div className="flex grow flex-col s768:w-auto">
-                                <GenreSection genres={['Siêu nhiên', 'Đời thường', 'Học đường']} />
+                                <GenreSection genres={episode?.data?.movie_genres?.map((genre) => genre.name) || []} />
                                 <span className="block text-[14px] font-light s768:hidden">Nhóm sub:</span>
                                 <SubGroupSection
                                     groups={[
@@ -117,20 +132,14 @@ function MoviePlayer() {
                                         },
                                     ]}
                                 />
-                                <Description
-                                    totalEpisodes={24}
-                                    content="Câu chuyện bắt đầu với Goro, một bác sĩ tình cờ xử lý ca sinh nở của thần tượng mà mình yêu thích - Ai Hoshino, người đã tạm ngừng hoạt động trong ngành giải trí để sinh hai đứa con song sinh. Tuy nhiên, ngay trước khi Ai sinh ra, Gorō đã chết vì một tai nạn, nhưng được tái sinh thành một trong những đứa con của Ai, Aquamarine Hoshino, với ký ức hoàn toàn nguyên vẹn."
-                                    source="TinAnime"
-                                />
+                                <Description totalEpisodes={24} content={episode?.data.movie_description} source="Bot vn" />
                             </div>
                         </div>
-                        <TagList tags={['Đạt đz tag', 'Đạt đz tag', 'Đạt đz tag', 'Đạt đz tag', 'Đạt đz tag', 'Đạt đz tag']} />
+                        <TagList tags={episode?.data?.movie_tags?.map((tag) => tag.name) || []} />
                     </div>
                 </div>
             </div>
-            <section className="mx-4">
-                <MovieList title={'Chỗ này thêm slide'} />
-            </section>
+            <section className="mx-4">{/* <MovieList title={'Chỗ này thêm slide'} /> */}</section>
         </div>
     );
 }
