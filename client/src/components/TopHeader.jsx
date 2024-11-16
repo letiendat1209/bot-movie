@@ -4,6 +4,18 @@ import { Bell, Search, User, Settings, HelpCircle, ChevronDown } from 'lucide-re
 const TopHeader = () => {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
 
+    // Đọc user data an toàn hơn
+    const getUserData = () => {
+        try {
+            const storedUser = localStorage.getItem('user');
+            return storedUser ? JSON.parse(storedUser) : null;
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            return null;
+        }
+    };
+
+    const userData = getUserData();
     return (
         <div className="w-full bg-white shadow-md">
             <div className="flex h-16 items-center justify-between px-4">
@@ -49,8 +61,10 @@ const TopHeader = () => {
                                 <User className="h-5 w-5 text-white" />
                             </div>
                             <div className="hidden text-left md:block">
-                                <div className="text-sm font-semibold text-gray-700">Admin Name</div>
-                                <div className="text-xs text-gray-500">Super Admin</div>
+                                <div className="text-sm font-semibold text-gray-700">
+                                    {userData?.first_name + ' ' + userData?.last_name}
+                                </div>
+                                <div className="text-xs text-gray-500">{userData?.role}</div>
                             </div>
                             <ChevronDown className="h-4 w-4 text-gray-600" />
                         </button>

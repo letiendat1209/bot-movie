@@ -14,12 +14,12 @@ import { authenticate, checkRole } from "../middlewares/auth";
 
 const routerMovies = Router();
 
-routerMovies.post("/", getAllMovies);
+routerMovies.get("/", getAllMovies);
 routerMovies.post("/", createMovies);
 routerMovies.get("/:idMovie", getMovieById);
 routerMovies.get("/:idMovie/seasons", getSeasonsByMovieId);
 routerMovies.get("/:idMovie/seasons/:idSeason/episodes/:idEpisode", getEpisodeDetails);
-routerMovies.put("/:idMovie", authenticate , checkRole("admin"), updateMovies);
+routerMovies.put("/:idMovie", updateMovies);
 routerMovies.delete("/:idMovie", deleteMovies);
 
 

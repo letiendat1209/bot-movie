@@ -6,6 +6,10 @@ import routerAuth from "./auth";
 import routerUser from "./user";
 import routerGenre from "./genre";
 import routerTag from "./tag";
+import routerDashBoard from "./dashboard";
+import routerUpload from "./upload";
+import routerSubtitle from "./subtitle";
+import routerImages from "./Images";
 
 const initRoutes = Router();
 
@@ -16,5 +20,9 @@ initRoutes.use("/auth", routerAuth);
 initRoutes.use("/user", routerUser);
 initRoutes.use("/genre", routerGenre);
 initRoutes.use("/tag", routerTag);
+initRoutes.use("/dashboard", routerDashBoard);
+initRoutes.use("/upload", routerUpload);
+initRoutes.use("/subtitle", routerSubtitle);
+initRoutes.use("/images", routerImages);
 
 export default initRoutes;

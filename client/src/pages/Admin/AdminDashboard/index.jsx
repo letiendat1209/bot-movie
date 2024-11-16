@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Film, Users, Play, TrendingUp, Eye, Calendar, AlertCircle, Star, Clock } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { getTotalUsers, getTotalViews } from '~/services/dashboard';
 
 const viewsData = [
     { name: 'T2', views: 4000 },
@@ -21,6 +22,28 @@ const topMovies = [
 ];
 
 const MovieAdminDashboard = () => {
+    const [totalViews, setTotalViews] = useState();
+    const [totalUsers, setTotalUsers] = useState();
+    useEffect(() => {
+        const fetchTotalViews = async () => {
+            try {
+                const response = await getTotalViews();
+                setTotalViews(response.totalViews);
+            } catch (error) {
+                console.error('Failed to fetch total views:', error);
+            }
+        };
+        const fetchTotalUsers = async () => {
+            try {
+                const response = await getTotalUsers();
+                setTotalUsers(response.totalUsers);
+            } catch (error) {
+                console.error('Failed to fetch total users:', error);
+            }
+        }
+        fetchTotalViews();
+        fetchTotalUsers();
+    }, []);
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             {/* Header */}
@@ -35,7 +58,7 @@ const MovieAdminDashboard = () => {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-500">Tổng lượt xem</p>
-                            <h3 className="mt-1 text-2xl font-bold text-gray-800">458,200</h3>
+                            <h3 className="mt-1 text-2xl font-bold text-gray-800">{totalViews}</h3>
                             <span className="text-sm text-green-500">+15% so với tuần trước</span>
                         </div>
                         <div className="rounded-full bg-blue-100 p-3">
@@ -48,7 +71,7 @@ const MovieAdminDashboard = () => {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-500">Người dùng đăng ký</p>
-                            <h3 className="mt-1 text-2xl font-bold text-gray-800">12,845</h3>
+                            <h3 className="mt-1 text-2xl font-bold text-gray-800">{totalUsers}</h3>
                             <span className="text-sm text-green-500">+8% so với tuần trước</span>
                         </div>
                         <div className="rounded-full bg-green-100 p-3">

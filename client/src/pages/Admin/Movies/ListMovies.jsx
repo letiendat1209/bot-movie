@@ -1,74 +1,36 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, Plus, Edit, Trash2, Filter, ChevronLeft, ChevronRight, Eye, Calendar, Star, Clock } from 'lucide-react';
+import { getAllMovies } from '~/services/movies';
+import { Link } from 'react-router-dom';
 
 const Movies = () => {
+    const [movies, setMovies] = useState([]);
     const [selectedFilter, setSelectedFilter] = useState('all');
-    // Mock data for movies
-    const movies = [
-        {
-            id: 'MV001',
-            title: 'Inception',
-            thumbnail:
-                'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1OiiMz4VfZ9JQuMn0FXiHzncAWiDrtonc%3Dw500-h750&w=320&q=80',
-            genre: 'Khoa học viễn tưởng',
-            duration: '2h 28m',
-            releaseYear: '2020',
-            rating: 4.8,
-            status: 'public',
-            views: '125,432',
-            quality: '4K',
-        },
-        {
-            id: 'MV002',
-            title: 'The Dark Knight',
-            thumbnail:
-                'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1zzn_ZUIIg1nJvo-6bJIzjfI_5alCDXzF%3Dw500-h750&w=320&q=80',
-            genre: 'Hành động',
-            duration: '2h 32m',
-            releaseYear: '2019',
-            rating: 4.9,
-            status: 'public',
-            views: '98,654',
-            quality: 'HD',
-        },
-        {
-            id: 'MV003',
-            title: 'Parasite',
-            thumbnail:
-                'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1yglwAIqXFWw4iGv177w8PhARGlOcWZM0%3Dw500-h750&w=320&q=80',
-            genre: 'Chính kịch',
-            duration: '2h 12m',
-            releaseYear: '2021',
-            rating: 4.7,
-            status: 'private',
-            views: '85,321',
-            quality: 'FHD',
-        },
-        {
-            id: 'MV004',
-            title: 'Avengers: Endgame',
-            thumbnail:
-                'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1yglwAIqXFWw4iGv177w8PhARGlOcWZM0%3Dw500-h750&w=320&q=80',
-            genre: 'Hành động',
-            duration: '3h 1m',
-            releaseYear: '2022',
-            rating: 4.6,
-            status: 'public',
-            views: '150,789',
-            quality: '4K',
-        },
-    ];
 
+    useEffect(() => {
+        const fetchMovies = async () => {
+            try {
+                const data = await getAllMovies();
+                setMovies(data);
+            } catch (error) {
+                console.error('Error fetching movies:', error);
+            }
+        };
+        fetchMovies();
+    }, []);
+    // Mock data for movies
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-gray-800">Quản lý danh sách phim</h1>
-                <button className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-                    <Plus className="mr-2 h-5 w-5" />
-                    Thêm phim mới
-                </button>
+                <Link to="/admin/movies/add">
+                    <button className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                        <Plus className="mr-2 h-5 w-5" />
+                        Thêm phim mới
+                    </button>
+                </Link>
             </div>
 
             {/* Search and Filter Bar */}
@@ -121,7 +83,7 @@ const Movies = () => {
                                 <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Năm</th>
                                 <th className="px-6 py-3 text-center text-sm font-medium text-gray-500">Đánh giá</th>
                                 <th className="px-6 py-3 text-center text-sm font-medium text-gray-500">Lượt xem</th>
-                                <th className="px-6 py-3 text-center text-sm font-medium text-gray-500">Trạng thái</th>
+                                {/* <th className="px-6 py-3 text-center text-sm font-medium text-gray-500">Trạng thái</th> */}
                                 <th className="px-6 py-3 text-center text-sm font-medium text-gray-500">Thao tác</th>
                             </tr>
                         </thead>
@@ -133,33 +95,35 @@ const Movies = () => {
                                             <img src={movie.thumbnail} alt={movie.title} className="h-20 w-14 rounded object-cover" />
                                             <div>
                                                 <div className="font-medium text-gray-900">{movie.title}</div>
-                                                <div className="text-sm text-gray-500">{movie.id}</div>
-                                                <div className="text-sm text-blue-600">{movie.quality}</div>
+                                                <div className="text-sm text-gray-500">ID: #{movie.id}</div>
+                                                {/* <div className="text-sm text-blue-600">{movie.rating}</div> */}
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-500">{movie.genre}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-500">{movie.type}</td>
                                     <td className="px-6 py-4 text-sm text-gray-500">{movie.duration}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-500">{movie.releaseYear}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-500">{movie.release_date || 2024}</td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center justify-center">
                                             <Star className="h-4 w-4 text-yellow-400" />
                                             <span className="ml-1 text-sm text-gray-600">{movie.rating}</span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-center text-sm text-gray-500">{movie.views}</td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-6 py-4 text-center text-sm text-gray-500">{movie.total_views}</td>
+                                    {/* <td className="px-6 py-4">
                                         <span
                                             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${movie.status === 'public' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}
                                         >
                                             {movie.status === 'public' ? 'Công khai' : 'Riêng tư'}
                                         </span>
-                                    </td>
+                                    </td> */}
                                     <td className="px-6 py-4">
                                         <div className="flex items-center justify-center space-x-3">
-                                            <button className="p-1 hover:text-blue-600">
-                                                <Eye className="h-5 w-5" />
-                                            </button>
+                                            <Link to={`/admin/movies/${movie.id}`}>
+                                                <button className="p-1 hover:text-blue-600">
+                                                    <Eye className="h-5 w-5" />
+                                                </button>
+                                            </Link>
                                             <button className="p-1 hover:text-green-600">
                                                 <Edit className="h-5 w-5" />
                                             </button>

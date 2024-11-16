@@ -51,24 +51,24 @@ function Header() {
 
                 {/* Menu Items for larger screens */}
                 <nav className="hidden gap-2 md:flex">
-                    <a
-                        href="/anime"
+                    <Link
+                        to={`/type/anime`}
                         className="whitespace-nowrap rounded-full border border-gray-500 bg-transparent px-4 py-2 text-cyan-200 hover:text-cyan-500 dark:text-white"
                     >
                         Anime
-                    </a>
-                    <a
-                        href="/movie"
+                    </Link>
+                    <Link
+                        to={`/type/movie`}
                         className="whitespace-nowrap rounded-full border border-gray-500 bg-transparent px-4 py-2 text-cyan-200 hover:text-cyan-500 dark:text-white"
                     >
                         Movie
-                    </a>
-                    <a
-                        href="/english-1-1"
+                    </Link>
+                    <Link
+                        to={`/type/English 1-1`}
                         className="whitespace-nowrap rounded-full border border-gray-500 bg-transparent px-4 py-2 text-cyan-200 hover:text-cyan-500 dark:text-white"
                     >
                         English 1-1
-                    </a>
+                    </Link>
                     <a
                         href="/rank"
                         className="whitespace-nowrap rounded-full border border-gray-500 bg-transparent px-4 py-2 text-cyan-200 hover:text-cyan-500 dark:text-white"

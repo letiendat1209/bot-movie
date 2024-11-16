@@ -26,15 +26,15 @@ export default function Sidebar() {
             items: [
                 { title: 'Dashboard', icon: LayoutDashboard, link: '/admin/adminDashboard' },
                 { title: 'Movies', icon: Film, link: '/admin/movies' },
-                { title: 'Series', icon: Tv, link: '/series' },
-                { title: 'Add New Content', icon: PlusCircle, link: '/add-content' },
+                { title: 'Add Season/Episode', icon: Tv, link: '/admin/movies' },
+                { title: 'Change Slider', icon: PlusCircle, link: '/add-content' },
                 { title: 'Subtitles', icon: Subtitles, link: '/subtitles' },
             ],
         },
         {
             section: 'USER MANAGEMENT',
             items: [
-                { title: 'User List', icon: Users, link: '/users' },
+                { title: 'User List', icon: Users, link: '/admin/listUsers' },
                 { title: 'Roles & Permissions', icon: Key, link: '/roles' },
             ],
         },

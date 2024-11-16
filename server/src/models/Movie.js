@@ -126,7 +126,7 @@ const Movie = sequelize.define(
       type: DataTypes.STRING,
       validate: {
         isIn: {
-          args: [['movie', 'series']],
+          args: [['movie', 'series','anime','English 1-1']],
           msg: "Loại phim phải là 'movie' hoặc 'series'"
         }
       }

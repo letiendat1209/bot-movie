@@ -1,5 +1,14 @@
 import User from "../models/User";
 
+// Tạo người dùng
+export const createUser = async (req, res) => {
+  try {
+    const user = await User.create(req.body);
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 // Lấy danh sách người dùng
 export const getAllUsers = async (req, res) => {
   try {

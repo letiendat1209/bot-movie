@@ -1,127 +1,31 @@
 /* eslint-disable no-unused-vars */
 import { SearchIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import MovieList from '~/components/MovieList';
+import { getAllMovies } from '~/services/movies';
 
-// Giả sử đây là danh sách phim mẫu
-const movies = [
-    {
-        id: 1,
-        title: 'Re:Zero : Trận chiến cuối cùng, người chiến thắng tất cả',
-        season: 3,
-        episode: 1,
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1OiiMz4VfZ9JQuMn0FXiHzncAWiDrtonc%3Dw500-h750&w=320&q=80',
-        rating: 8.5,
-        status: 'Ongoing',
-    },
-    {
-        id: 2,
-        title: 'Alya',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1zzn_ZUIIg1nJvo-6bJIzjfI_5alCDXzF%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 3,
-        title: 'Oshi no Ko',
-        season: 3,
-        episode: 1,
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1yglwAIqXFWw4iGv177w8PhARGlOcWZM0%3Dw500-h750&w=320&q=80',
-        rating: 8.5,
-        status: 'Ongoing',
-    },
-    {
-        id: 4,
-        title: 'Shikanoko',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1-D3cYD7lwJUSoF2vI6WzbAmfsSSsUTmd%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 5,
-        title: 'Failure Frame',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1-Id_HKy0yKvwDyuhw5Q5wWJx9V1pNURR%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 6,
-        title: 'Boku no Hero Academia',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1ymAvRy7DZh2Zs6HCYVpcM_artem5vP75%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 7,
-        title: 'Shangri-La Frontier',
-        season: 2,
-        episode: 1,
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1vzLn-OVblgIj_Om6fWCLIdcvyVzpLtnp%3Dw531-h7500&w=320&q=80',
-        rating: 8.5,
-        status: 'Ongoing',
-    },
-    {
-        id: 8,
-        title: 'Konosuba',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1zgxTRC3PCOx6T7AMnUmazdHm0CeNctd9%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 9,
-        title: 'Classroom Of The Elite',
-        season: 3,
-        episode: 1,
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1ziYkWMz7Lyzh1yDb2Pof1wXBx1ga807o%3Dw500-h750&w=320&q=80',
-        rating: 8.5,
-        status: 'Ongoing',
-    },
-    {
-        id: 4,
-        title: 'Frieren',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1z3EMGUORpisbl-aXqKXOQAMEhLdzgVN0%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 5,
-        title: 'Chainsaw Man',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F10DCvGIKtkVbwtX7jCrbdcOChTqUF7e9L%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    {
-        id: 6,
-        title: 'Wistoria',
-        season: 1,
-        episode: 'Complete',
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1-46_oZH36vlofSB_Viu53eYNCbtXM63G%3Dw500-h750&w=320&q=80',
-        rating: 7.8,
-        status: 'Complete',
-    },
-    // Thêm các phim khác
-];
+
 
 function Search() {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
 
+    const [movies, setMovies] = useState([]);
+    useEffect(() => {
+        const fetchMovies = async () => {
+            try {
+                const response = await getAllMovies();
+                const data = await response;  
+                setMovies(data);
+            } catch (error) {
+                console.error('Error fetching movies:', error);
+            }
+        };
+        fetchMovies();
+    }, []);
+    console.log(movies);
     const handleSearch = () => {
         const filteredMovies = movies.filter((movie) => movie.title.toLowerCase().includes(query.toLowerCase()));
         setResults(filteredMovies);
@@ -171,7 +75,7 @@ function Search() {
                                 <div className="group relative h-full w-full overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
                                     <img
                                         className="h-full w-full transform object-cover transition-transform duration-500 group-hover:scale-110"
-                                        src={movie.image}
+                                        src={movie.thumbnail}
                                         alt={movie.title}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>

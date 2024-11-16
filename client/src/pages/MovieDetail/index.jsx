@@ -48,7 +48,7 @@ export default function MovieDetail() {
                 {/* Movie Info Container */}
                 <div className="absolute -bottom-16 left-[10%] flex gap-8">
                     {/* Movie Poster */}
-                    <img src={movie?.thumbnail} alt="Movie poster" className="h-72 w-48 rounded-lg shadow-lg" />
+                    <img src={movie?.thumbnail} alt="Movie poster" className="h-72 w-48 rounded-lg object-cover shadow-lg" />
                     {/* Movie Details */}
                     <div className="mt-auto py-14">
                         <h1 className="mb-2 text-4xl font-bold">{movie?.title}</h1>

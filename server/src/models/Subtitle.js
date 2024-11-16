@@ -9,7 +9,7 @@ const Subtitle = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    episodes_id: {
+    episode_id: {
       type: DataTypes.INTEGER,
       references: {
         model: "Episode",

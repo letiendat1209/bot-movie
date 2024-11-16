@@ -1,5 +1,6 @@
 {
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "cSpell.language": "en,lorem,vi"
+  "cSpell.language": "en,lorem,vi",
+  "cSpell.words": ["cloudinary"]
 }

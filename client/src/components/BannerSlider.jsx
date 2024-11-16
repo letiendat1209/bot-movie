@@ -5,27 +5,24 @@ import 'swiper/css/navigation';
 import 'swiper/css/effect-fade'; // Import hiệu ứng fade
 import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules';
 import '../styles/components/BannerSlider.css';
-const data = [
-    {
-        title: 'Kaiju No. 8',
-        description:
-            "In a world plagued by creatures known as Kaiju, Kafka Hibino aspired to enlist in The Defense Force. He makes a promise to enlist with his childhood friend, Mina Ashiro.Soon, life takes them in separate ways.While employed cleaning up after Kaiju battles, Kafka meets Reno Ichikawa.Reno's determination to join The Defense Force reawakens Kafka's promise to join Mina and protect humanity.",
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F17ovUftCzLgf-rNnn5NV9KCqIJg1pfI1j%3Dw3840&w=1920&q=80',
-    },
-    {
-        title: 'DandaDan',
-        description:
-            "When high schooler Momo, from a family of spirit mediums, first meets her classmate Okarun, an occult geek, they argue—Momo believes in ghosts but denies aliens, and Okarun believes in aliens but denies ghosts. from a family of spirit mediums, first meets her classmate Okarun,",
-        image: 'https://ninoidol.vercel.app/api/image-proxy?imageUrl=https%3A%2F%2Fres.cloudinary.com%2Fdkyjtpdpr%2Fimage%2Fupload%2Fw_1536%2Cf_avif%2Cq_75%2Fv1729274328%2Fpc_r4fayr.webp',
-    },
-    {
-        title: 'Failure Flame',
-        description:
-            "While on the road to their field trip, Class 2-C's bus is enveloped in light, and the Goddess, Vicius, summons the students and their teacher to another world.The Goddess hopes to raise them as Heroes to defeat the Great Demon Empire, and she",
-        image: 'https://ninoidol.vercel.app/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Iq82R_G7kZTeqM4AH8MSJCWfXckRNqEf%3Dw3840&w=1920&q=80',
-    },
-];
+import { useEffect, useState } from 'react';
+import { getImagesByType } from '~/services/Images';
+
 function BannerSlider() {
+    const [data, setData] = useState([]);
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const response = await getImagesByType('slider');
+                setData(response);
+                console.log(response);
+            } catch (error) {
+                console.error('Failed to fetch images:', error);
+            }
+        };
+        fetchImages();
+    }, []);
+
     return (
         <Swiper
             effect="fade" //
@@ -67,9 +64,10 @@ function BannerSlider() {
             {data.map((item, index) => (
                 <SwiperSlide key={index}>
                     <div className="relative">
-                        <img src={item.image} alt="Slide 1" className="w-full" />
+                        <img src={item.url} alt="Slide 1" className="w-full" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/35 to-transparent"></div>
                         <div className="absolute left-20 top-1/4 max-w-[460px] space-y-4 text-white">
-                            <h2 className="text-4xl font-bold">{item.title}</h2>
+                            <h2 className="text-4xl font-bold md:line-clamp-1">{item.title}</h2>
                             <p className="hidden text-lg md:line-clamp-5">{item.description}</p>
                             <div className="flex space-x-4">
                                 <button className="rounded-full bg-cyan-200 px-4 py-2 font-semibold uppercase text-black">

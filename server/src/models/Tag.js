@@ -15,7 +15,7 @@ const Tag = sequelize.define(
     },
     slug: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {

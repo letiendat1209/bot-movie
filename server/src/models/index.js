@@ -11,8 +11,11 @@ import MovieGenre from './MovieGenre';
 import MovieTag from './MovieTag';
 import Actor from './Actor';
 import MovieCast from './MovieCast';
+import User from './User';
+import Subtitle from './Subtitle';
 
 const models = {
+  sequelize,
   Movie,
   Season,
   Episode,
@@ -21,7 +24,9 @@ const models = {
   MovieGenre,
   MovieTag,
   Actor,
-  MovieCast
+  MovieCast,
+  User,
+  Subtitle
 };
 
 const initAssociations = () => {
@@ -86,6 +91,16 @@ const initAssociations = () => {
     otherKey: 'movie_id',
     as: 'movies'
   });
+
+  // Episode - Subtitle Associations
+  models.Episode.hasMany(models.Subtitle, {
+    foreignKey: 'episode_id',
+    as: 'subtitles'
+  })
+  models.Subtitle.belongsTo(models.Episode, {
+    foreignKey: 'episode_id',
+    as: 'episode'
+  })
 };
 
 // Khởi tạo associations

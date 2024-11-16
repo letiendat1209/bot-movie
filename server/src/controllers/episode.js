@@ -89,7 +89,7 @@ export const getEpisodeById = async (req, res) => {
           ],
         },
       ],
-      attributes: ["id", "episode_number", "title", "duration", "video_url"],
+      attributes: ["id", "episode_number", "title", "duration", "video_url", "subtitle_url","overview"],
     });
 
     if (!episode) {
@@ -109,6 +109,8 @@ export const getEpisodeById = async (req, res) => {
       title: episode.title,
       duration: episode.duration,
       video_url: episode.video_url,
+      subtitle_url: episode.subtitle_url,
+      overview: episode.overview,
 
       movie_title: movie?.title,
       movie_description: movie?.description,

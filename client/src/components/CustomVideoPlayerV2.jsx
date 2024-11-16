@@ -2,18 +2,14 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ReactPlayer from 'react-player';
-import {
-    Play, Pause, SkipBack, SkipForward,
-    Volume2, VolumeX, Maximize, Minimize,
-    Settings, X
-} from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Maximize, Minimize, Settings, X } from 'lucide-react';
 
 const PLAYBACK_SPEEDS = [0.25, 0.5, 1, 1.5, 2];
 const SEEK_SECONDS = 10;
 const VOLUME_STEP = 0.01;
 const CONTROLS_HIDE_DELAY = 2000; // 2 seconds delay before hiding controls
 
-const CustomVideoPlayerV2 = ({ url }) => {
+const CustomVideoPlayerV2 = ({ url, subtitleUrl }) => {
     // Player state management
     const [playerState, setPlayerState] = useState({
         playing: false,
@@ -25,7 +21,7 @@ const CustomVideoPlayerV2 = ({ url }) => {
         playbackRate: 1,
         duration: 0,
         currentTime: 0,
-        buffered: 0
+        buffered: 0,
     });
 
     // UI state management
@@ -78,60 +74,70 @@ const CustomVideoPlayerV2 = ({ url }) => {
 
     // Player control handlers
     const handlePlayPause = useCallback(() => {
-        setPlayerState(prev => ({ ...prev, playing: !prev.playing }));
+        setPlayerState((prev) => ({ ...prev, playing: !prev.playing }));
         resetControlsTimeout();
     }, [resetControlsTimeout]);
 
-    const handleTimeSeek = useCallback((direction) => {
-        if (!playerRef.current) return;
-        
-        const currentTime = playerRef.current.getCurrentTime();
-        const newTime = direction === 'backward' 
-            ? Math.max(currentTime - SEEK_SECONDS, 0)
-            : Math.min(currentTime + SEEK_SECONDS, playerState.duration);
-            
-        playerRef.current.seekTo(newTime);
-        resetControlsTimeout();
-    }, [playerState.duration, resetControlsTimeout]);
+    const handleTimeSeek = useCallback(
+        (direction) => {
+            if (!playerRef.current) return;
+
+            const currentTime = playerRef.current.getCurrentTime();
+            const newTime =
+                direction === 'backward'
+                    ? Math.max(currentTime - SEEK_SECONDS, 0)
+                    : Math.min(currentTime + SEEK_SECONDS, playerState.duration);
+
+            playerRef.current.seekTo(newTime);
+            resetControlsTimeout();
+        },
+        [playerState.duration, resetControlsTimeout],
+    );
 
     const handleProgress = useCallback((state) => {
-        setPlayerState(prev => ({
+        setPlayerState((prev) => ({
             ...prev,
             progress: state.played,
             currentTime: state.playedSeconds,
-            buffered: state.loaded
+            buffered: state.loaded,
         }));
     }, []);
 
-    const handleSeek = useCallback((e) => {
-        if (!progressRef.current || !playerRef.current) return;
+    const handleSeek = useCallback(
+        (e) => {
+            if (!progressRef.current || !playerRef.current) return;
 
-        const bounds = progressRef.current.getBoundingClientRect();
-        const percent = (e.clientX - bounds.left) / bounds.width;
-        playerRef.current.seekTo(percent);
-        resetControlsTimeout();
-    }, [resetControlsTimeout]);
+            const bounds = progressRef.current.getBoundingClientRect();
+            const percent = (e.clientX - bounds.left) / bounds.width;
+            playerRef.current.seekTo(percent);
+            resetControlsTimeout();
+        },
+        [resetControlsTimeout],
+    );
 
-    const handleVolumeChange = useCallback((e) => {
-        const newVolume = parseFloat(e.target.value);
-        setPlayerState(prev => ({
-            ...prev,
-            volume: newVolume,
-            muted: newVolume === 0
-        }));
-        resetControlsTimeout();
-    }, [resetControlsTimeout]);
+    const handleVolumeChange = useCallback(
+        (e) => {
+            const newVolume = parseFloat(e.target.value);
+            setPlayerState((prev) => ({
+                ...prev,
+                volume: newVolume,
+                muted: newVolume === 0,
+            }));
+            resetControlsTimeout();
+        },
+        [resetControlsTimeout],
+    );
 
     const toggleMute = useCallback(() => {
-        setPlayerState(prev => ({ ...prev, muted: !prev.muted }));
+        setPlayerState((prev) => ({ ...prev, muted: !prev.muted }));
         resetControlsTimeout();
     }, [resetControlsTimeout]);
 
     // Fullscreen management
     const handleFullscreenChange = useCallback(() => {
-        setPlayerState(prev => ({
+        setPlayerState((prev) => ({
             ...prev,
-            fullscreen: !!document.fullscreenElement
+            fullscreen: !!document.fullscreenElement,
         }));
     }, []);
 
@@ -174,47 +180,47 @@ const CustomVideoPlayerV2 = ({ url }) => {
         {
             icon: <SkipBack size={20} />,
             onClick: () => handleTimeSeek('backward'),
-            label: 'Tua lại 10 giây'
+            label: 'Tua lại 10 giây',
         },
         {
             icon: playerState.playing ? <Pause size={20} /> : <Play size={20} />,
             onClick: handlePlayPause,
-            label: playerState.playing ? 'Tạm dừng' : 'Phát'
+            label: playerState.playing ? 'Tạm dừng' : 'Phát',
         },
         {
             icon: <SkipForward size={20} />,
             onClick: () => handleTimeSeek('forward'),
-            label: 'Tua đi 10 giây'
+            label: 'Tua đi 10 giây',
         },
         {
             icon: playerState.muted ? <VolumeX size={20} /> : <Volume2 size={20} />,
             onClick: () => {
                 toggleMute();
-                setShowVolumeSlider(prev => !prev);
+                setShowVolumeSlider((prev) => !prev);
             },
-            label: playerState.muted ? 'Bật âm thanh' : 'Tắt âm thanh'
-        }
+            label: playerState.muted ? 'Bật âm thanh' : 'Tắt âm thanh',
+        },
     ];
 
     const controlButtonsRight = [
         {
             icon: <Settings size={20} />,
             onClick: () => {
-                setPlayerState(prev => ({ ...prev, showSettings: !prev.showSettings }));
+                setPlayerState((prev) => ({ ...prev, showSettings: !prev.showSettings }));
                 resetControlsTimeout();
             },
-            label: 'Cài đặt'
+            label: 'Cài đặt',
         },
         {
             icon: playerState.fullscreen ? <Minimize size={20} /> : <Maximize size={20} />,
             onClick: toggleFullscreen,
-            label: playerState.fullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'
-        }
+            label: playerState.fullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình',
+        },
     ];
 
     return (
-        <div 
-            ref={containerRef} 
+        <div
+            ref={containerRef}
             className="relative aspect-video bg-black"
             onMouseMove={handleMouseMove}
             onMouseEnter={handleMouseEnter}
@@ -230,20 +236,28 @@ const CustomVideoPlayerV2 = ({ url }) => {
                 muted={playerState.muted}
                 playbackRate={playerState.playbackRate}
                 onProgress={handleProgress}
-                onDuration={(duration) => setPlayerState(prev => ({ ...prev, duration }))}
+                onDuration={(duration) => setPlayerState((prev) => ({ ...prev, duration }))}
                 onError={(error) => console.error('Player error:', error)}
                 config={{
                     file: {
                         attributes: {
                             controlsList: 'nodownload',
-                            onContextMenu: (e) => e.preventDefault()
-                        }
-                    }
+                            onContextMenu: (e) => e.preventDefault(),
+                        },
+                        tracks: [
+                            {
+                                kind: 'subtitles',
+                                src: subtitleUrl, // Đường dẫn phụ đề
+                                srcLang: 'vi', // Ngôn ngữ phụ đề (ở đây là tiếng Việt)
+                                default: true, // Đặt phụ đề này làm mặc định
+                            },
+                        ],
+                    },
                 }}
             />
 
             {/* Controls overlay */}
-            <div 
+            <div
                 className={`absolute bottom-0 left-0 right-0 transition-opacity duration-200 ${
                     showControls ? 'opacity-100' : 'opacity-0'
                 } ${!showControls && 'pointer-events-none'}`}
@@ -310,7 +324,7 @@ const CustomVideoPlayerV2 = ({ url }) => {
 
                     {/* Volume slider */}
                     {showVolumeSlider && (
-                        <div 
+                        <div
                             className="absolute bottom-full left-[126px] -translate-x-1/2 transform rounded bg-black/50 p-2"
                             onMouseEnter={() => {
                                 setShowControls(true);
@@ -333,7 +347,7 @@ const CustomVideoPlayerV2 = ({ url }) => {
                                 className="h-24"
                                 style={{
                                     writingMode: 'vertical-lr',
-                                    direction: 'rtl'
+                                    direction: 'rtl',
                                 }}
                                 aria-label="Volume control"
                             />
@@ -344,7 +358,7 @@ const CustomVideoPlayerV2 = ({ url }) => {
 
             {/* Settings panel */}
             {playerState.showSettings && (
-                <div 
+                <div
                     className="absolute bottom-[55px] right-[10px] z-10 rounded-lg bg-black/90 p-4"
                     onMouseEnter={() => {
                         setShowControls(true);
@@ -353,12 +367,12 @@ const CustomVideoPlayerV2 = ({ url }) => {
                         }
                     }}
                     onMouseLeave={() => {
-                        setPlayerState(prev => ({ ...prev, showSettings: false }));
+                        setPlayerState((prev) => ({ ...prev, showSettings: false }));
                         resetControlsTimeout();
                     }}
                 >
-                    <button 
-                        onClick={() => setPlayerState(prev => ({ ...prev, showSettings: false }))}
+                    <button
+                        onClick={() => setPlayerState((prev) => ({ ...prev, showSettings: false }))}
                         className="absolute right-2 top-2 text-white hover:text-blue-500"
                         aria-label="Đóng cài đặt"
                     >
@@ -373,7 +387,7 @@ const CustomVideoPlayerV2 = ({ url }) => {
                                 <button
                                     key={speed}
                                     onClick={() => {
-                                        setPlayerState(prev => ({ ...prev, playbackRate: speed }));
+                                        setPlayerState((prev) => ({ ...prev, playbackRate: speed }));
                                         resetControlsTimeout();
                                     }}
                                     className={`rounded border px-3 py-1 text-sm transition-colors ${
