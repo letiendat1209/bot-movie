@@ -7,6 +7,7 @@ import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules';
 import '../styles/components/BannerSlider.css';
 import { useEffect, useState } from 'react';
 import { getImagesByType } from '~/services/Images';
+import { Link } from 'react-router-dom';
 
 function BannerSlider() {
     const [data, setData] = useState([]);
@@ -15,7 +16,6 @@ function BannerSlider() {
             try {
                 const response = await getImagesByType('slider');
                 setData(response);
-                console.log(response);
             } catch (error) {
                 console.error('Failed to fetch images:', error);
             }
@@ -70,9 +70,11 @@ function BannerSlider() {
                             <h2 className="text-4xl font-bold md:line-clamp-1">{item.title}</h2>
                             <p className="hidden text-lg md:line-clamp-5">{item.description}</p>
                             <div className="flex space-x-4">
-                                <button className="rounded-full bg-cyan-200 px-4 py-2 font-semibold uppercase text-black">
-                                    start watching
-                                </button>
+                                <Link to={`/type/anime`}>
+                                    <button className="rounded-full bg-cyan-200 px-4 py-2 font-semibold uppercase text-black">
+                                        start watching
+                                    </button>
+                                </Link>
                                 <button className="rounded-full border-2 border-white bg-transparent px-4 py-2">
                                     <i className="fas fa-bookmark text-orange-200"></i>
                                 </button>

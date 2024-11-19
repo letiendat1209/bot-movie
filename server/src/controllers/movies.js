@@ -4,11 +4,21 @@ import models from "../models";
 export const createMovies = async (req, res) => {
   try {
     // Kiểm tra xem req.body có đầy đủ các trường cần thiết không
-    const { title, description, thumbnail, poster, trailer_url, release_date, duration, type } = req.body;
+    const {
+      title,
+      description,
+      thumbnail,
+      poster,
+      trailer_url,
+      release_date,
+      duration,
+      type,
+    } = req.body;
 
     if (!title || !description || !thumbnail || !poster || !type) {
       return res.status(400).json({
-        message: "Required fields are missing. Please provide title, description, thumbnail, poster, and type.",
+        message:
+          "Required fields are missing. Please provide title, description, thumbnail, poster, and type.",
       });
     }
 
@@ -88,7 +98,13 @@ export const getMovieById = async (req, res) => {
             {
               model: models.Episode,
               as: "episodes",
-              attributes: ["id", "episode_number", "title", "duration","subtitle_url"],
+              attributes: [
+                "id",
+                "episode_number",
+                "title",
+                "duration",
+                "subtitle_url",
+              ],
             },
           ],
         },
@@ -215,8 +231,8 @@ export const updateMovies = async (req, res) => {
     is_series,
     type,
     genres, // Thay đổi từ genreIds thành genres để nhận array của genre names
-    tags,   // Thay đổi từ tagIds thành tags để nhận array của tag names
-    actors  // Thay đổi từ actorIds thành actors để nhận array của actor names
+    tags, // Thay đổi từ tagIds thành tags để nhận array của tag names
+    actors, // Thay đổi từ actorIds thành actors để nhận array của actor names
   } = req.body;
 
   try {
@@ -243,47 +259,53 @@ export const updateMovies = async (req, res) => {
           rating,
           is_series,
           type,
-          updated_at: new Date()
+          updated_at: new Date(),
         },
         {
           where: { id: idMovie },
-          transaction
+          transaction,
         }
       );
 
       // Xử lý genres
       if (genres && Array.isArray(genres)) {
-        const genreObjects = await Promise.all(genres.map(async (genreName) => {
-          const [genre] = await models.Genre.findOrCreate({
-            where: { name: genreName.trim() },
-            transaction
-          });
-          return genre;
-        }));
+        const genreObjects = await Promise.all(
+          genres.map(async (genreName) => {
+            const [genre] = await models.Genre.findOrCreate({
+              where: { name: genreName.trim() },
+              transaction,
+            });
+            return genre;
+          })
+        );
         await movie.setGenres(genreObjects, { transaction });
       }
 
       // Xử lý tags
       if (tags && Array.isArray(tags)) {
-        const tagObjects = await Promise.all(tags.map(async (tagName) => {
-          const [tag] = await models.Tag.findOrCreate({
-            where: { name: tagName.trim() },
-            transaction
-          });
-          return tag;
-        }));
+        const tagObjects = await Promise.all(
+          tags.map(async (tagName) => {
+            const [tag] = await models.Tag.findOrCreate({
+              where: { name: tagName.trim() },
+              transaction,
+            });
+            return tag;
+          })
+        );
         await movie.setTags(tagObjects, { transaction });
       }
 
       // Xử lý actors
       if (actors && Array.isArray(actors)) {
-        const actorObjects = await Promise.all(actors.map(async (actorName) => {
-          const [actor] = await models.Actor.findOrCreate({
-            where: { name: actorName.trim() },
-            transaction
-          });
-          return actor;
-        }));
+        const actorObjects = await Promise.all(
+          actors.map(async (actorName) => {
+            const [actor] = await models.Actor.findOrCreate({
+              where: { name: actorName.trim() },
+              transaction,
+            });
+            return actor;
+          })
+        );
         await movie.setActors(actorObjects, { transaction });
       }
 
@@ -329,20 +351,18 @@ export const updateMovies = async (req, res) => {
 
       return res.status(200).json({
         message: "Movie updated successfully",
-        data: updatedMovie
+        data: updatedMovie,
       });
-
     } catch (error) {
       // Rollback transaction nếu có lỗi
       await transaction.rollback();
       throw error;
     }
-
   } catch (error) {
     console.error("Error updating movie:", error);
     return res.status(500).json({
       message: "Server error",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -477,3 +497,37 @@ export const getMoviesByType = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+// Tăng upvote khi người dùng ấn vào
+export const upvoteMovie = async (req, res) => {
+  try {
+    const { idMovie } = req.params;
+
+    // Kiểm tra idMovie có phải số hợp lệ
+    if (isNaN(idMovie)) {
+      return res.status(400).json({ message: "Invalid movie ID" });
+    }
+
+    // Tìm bộ phim
+    const movie = await models.Movie.findByPk(idMovie);
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+
+    // Tăng upvote
+    await movie.increment("upvote", { by: 1 });
+    const updatedMovie = await movie.reload(); // Lấy dữ liệu sau khi tăng
+
+    return res.status(200).json({
+      message: "Upvote movie successfully",
+      data: { id: movie.id, title: movie.title, upvotes: updatedMovie.upvote },
+    });
+  } catch (error) {
+    console.error("Error upvoting movie:", error);
+    return res.status(500).json({
+      message: "An error occurred while upvoting the movie",
+      error: error.message,
+    });
+  }
+};
+
+

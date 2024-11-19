@@ -9,6 +9,7 @@ import {
   getMoviesByGenre,
   getSeasonsByMovieId,
   getEpisodeDetails,
+  upvoteMovie,
 } from "../controllers/movies";
 import { authenticate, checkRole } from "../middlewares/auth";
 
@@ -17,6 +18,7 @@ const routerMovies = Router();
 routerMovies.get("/", getAllMovies);
 routerMovies.post("/", createMovies);
 routerMovies.get("/:idMovie", getMovieById);
+routerMovies.put("/:idMovie/upvote", upvoteMovie);
 routerMovies.get("/:idMovie/seasons", getSeasonsByMovieId);
 routerMovies.get("/:idMovie/seasons/:idSeason/episodes/:idEpisode", getEpisodeDetails);
 routerMovies.put("/:idMovie", updateMovies);

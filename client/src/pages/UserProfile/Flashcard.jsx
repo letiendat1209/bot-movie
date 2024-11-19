@@ -1,34 +1,33 @@
+/* eslint-disable react/prop-types */
 import { CheckIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { getFlashcardsByDeckId } from '~/services/flashcard';
 import '~/styles/components/flashcards.css';
 
 const Flashcards = () => {
-    const flashcardsData = [
-        {
-            english: 'picture',
-            vietnamese: 'Hình ảnh',
-            example: 'This is a beautiful picture of nature.',
-            ukAudio: 'link-to-uk-audio-1.mp3',
-            usAudio: 'link-to-us-audio-1.mp3',
-        },
-        {
-            english: 'book',
-            vietnamese: 'Quyển sách',
-            example: 'I love reading this book.',
-            ukAudio: 'link-to-uk-audio-2.mp3',
-            usAudio: 'link-to-us-audio-2.mp3',
-        },
-        {
-            english: 'computer',
-            vietnamese: 'Máy tính',
-            example: 'She works on her computer every day.',
-            ukAudio: 'link-to-uk-audio-3.mp3',
-            usAudio: 'link-to-us-audio-3.mp3',
-        },
-    ];
-
+    const {deckId} = useParams();
+    const [flashcardsData, setFlashcardsData] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFlipped, setIsFlipped] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch flashcards from API
+    useEffect(() => {
+        const fetchFlashcards = async () => {
+            setLoading(true);
+            try {
+                const data = await getFlashcardsByDeckId(deckId);
+                setFlashcardsData(data);
+            } catch (error) {
+                console.error('Failed to fetch flashcards:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFlashcards();
+    }, [deckId]);
 
     const handleFlip = () => {
         setIsFlipped(!isFlipped);
@@ -43,6 +42,22 @@ const Flashcards = () => {
         setIsFlipped(false);
         setCurrentIndex((prev) => (prev === 0 ? flashcardsData.length - 1 : prev - 1));
     };
+
+    if (loading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <p className="text-xl text-gray-500">Loading flashcards...</p>
+            </div>
+        );
+    }
+
+    if (flashcardsData.length === 0) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <p className="text-xl text-gray-500">No flashcards found for this deck.</p>
+            </div>
+        );
+    }
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-r from-pink-100 to-blue-100">
@@ -65,27 +80,23 @@ const Flashcards = () => {
                         {/* Mặt trước */}
                         <div className="flip-card-front">
                             <div>
-                                <h2 className="text-4xl font-bold text-blue-500">{flashcardsData[currentIndex].english}</h2>
+                                <h2 className="text-4xl font-bold text-blue-500">
+                                    {flashcardsData[currentIndex].english}
+                                </h2>
                                 <p className="mt-2 text-lg text-gray-500">English</p>
-                                <div className="mt-4 flex justify-center space-x-6">
-                                    <button className="rounded-lg bg-gray-100 px-5 py-2 hover:bg-gray-200">
-                                        <audio src={flashcardsData[currentIndex].ukAudio} />
-                                        <span className="font-medium text-blue-500">UK</span>
-                                    </button>
-                                    <button className="rounded-lg bg-gray-100 px-5 py-2 hover:bg-gray-200">
-                                        <audio src={flashcardsData[currentIndex].usAudio} />
-                                        <span className="font-medium text-blue-500">US</span>
-                                    </button>
-                                </div>
                             </div>
                         </div>
 
                         {/* Mặt sau */}
                         <div className="flip-card-back">
                             <div>
-                                <h2 className="text-4xl font-bold text-yellow-600">{flashcardsData[currentIndex].vietnamese}</h2>
+                                <h2 className="text-4xl font-bold text-yellow-600">
+                                    {flashcardsData[currentIndex].vietnamese}
+                                </h2>
                                 <p className="mt-2 text-lg text-gray-500">Nghĩa tiếng Việt</p>
-                                <p className="mt-6 text-base text-gray-700">{flashcardsData[currentIndex].example}</p>
+                                <p className="mt-6 text-base text-gray-700">
+                                    {flashcardsData[currentIndex].example}
+                                </p>
                             </div>
                         </div>
                     </div>

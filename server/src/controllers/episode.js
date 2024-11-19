@@ -112,6 +112,7 @@ export const getEpisodeById = async (req, res) => {
       subtitle_url: episode.subtitle_url,
       overview: episode.overview,
 
+      movie_upvote: movie?.upvote,
       movie_title: movie?.title,
       movie_description: movie?.description,
       movie_thumbnail: movie?.thumbnail,

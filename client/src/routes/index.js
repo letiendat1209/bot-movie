@@ -15,6 +15,7 @@ import MovieDetail from '~/pages/MovieDetail';
 import MoviePlayer from '~/pages/MoviePlayer';
 import Search from '~/pages/Search';
 import UserProfile from '~/pages/UserProfile';
+import Favorite from '~/pages/UserProfile/Favorite';
 import Flashcards from '~/pages/UserProfile/Flashcard';
 import FlashcardList from '~/pages/UserProfile/FlashcardList';
 import Pairs from '~/pages/UserProfile/pairs';
@@ -28,8 +29,9 @@ const publicRoutes = [
     { path: '/movies/:idMovie', component: MovieDetail },
     { path: '/pairs', component: Pairs },
 
-    { path: '/flashcards', component: Flashcards },
+    { path: '/flashcards/:deckId', component: Flashcards },
     { path: '/flashcardsList', component: FlashcardList },
+    { path: '/favorite', component: Favorite },
 
 
     { path: '/auth', component: Auth, layout: null },

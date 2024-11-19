@@ -1,25 +1,66 @@
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from 'react';
-import { Search, Plus, Edit, Trash2, Filter, ChevronLeft, ChevronRight, Eye, Calendar, Star, Clock } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Search, Plus, Edit, Trash2, ChevronLeft, ChevronRight, Eye, Star } from 'lucide-react';
 import { getAllMovies } from '~/services/movies';
 import { Link } from 'react-router-dom';
 
 const Movies = () => {
     const [movies, setMovies] = useState([]);
-    const [selectedFilter, setSelectedFilter] = useState('all');
+    const [filteredMovies, setFilteredMovies] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedGenre, setSelectedGenre] = useState('');
+    const [selectedYear, setSelectedYear] = useState('');
 
     useEffect(() => {
         const fetchMovies = async () => {
             try {
                 const data = await getAllMovies();
                 setMovies(data);
+                setFilteredMovies(data);
             } catch (error) {
                 console.error('Error fetching movies:', error);
             }
         };
         fetchMovies();
     }, []);
-    // Mock data for movies
+
+    useEffect(() => {
+        // Apply all filters
+        let result = movies;
+
+        // Search filter
+        if (searchTerm) {
+            result = result.filter(movie => 
+                movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        // Genre filter
+        if (selectedGenre) {
+            result = result.filter(movie => 
+                movie.genres.some(genre => genre.name.toLowerCase() === selectedGenre.toLowerCase())
+            );
+        }
+
+        // Year filter
+        if (selectedYear) {
+            result = result.filter(movie => 
+                (movie.release_date ? new Date(movie.release_date).getFullYear().toString() : '2024') === selectedYear
+            );
+        }
+        setFilteredMovies(result);
+    }, [movies, searchTerm, selectedGenre, selectedYear]);
+
+    // Extract unique genres and years from movies
+    const uniqueGenres = [...new Set(
+        movies.flatMap(movie => movie.genres.map(genre => genre.name))
+    )];
+
+    const uniqueYears = [...new Set(
+        movies.map(movie => 
+            movie.release_date ? new Date(movie.release_date).getFullYear().toString() : '2024'
+        )
+    )];
+
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             {/* Header */}
@@ -41,6 +82,8 @@ const Movies = () => {
                         <input
                             type="text"
                             placeholder="Tìm kiếm phim..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:outline-none"
                         />
                         <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
@@ -48,25 +91,38 @@ const Movies = () => {
 
                     {/* Filters */}
                     <div className="flex space-x-4">
-                        <select className="rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                        <select 
+                            value={selectedGenre}
+                            onChange={(e) => setSelectedGenre(e.target.value)}
+                            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                        >
                             <option value="">Tất cả thể loại</option>
-                            <option value="action">Hành động</option>
-                            <option value="drama">Chính kịch</option>
-                            <option value="scifi">Khoa học viễn tưởng</option>
+                            {uniqueGenres.map(genre => (
+                                <option key={genre} value={genre}>{genre}</option>
+                            ))}
                         </select>
 
-                        <select className="rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                        <select 
+                            value={selectedYear}
+                            onChange={(e) => setSelectedYear(e.target.value)}
+                            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                        >
                             <option value="">Tất cả năm</option>
-                            <option value="2022">2022</option>
-                            <option value="2021">2021</option>
-                            <option value="2020">2020</option>
+                            {uniqueYears.sort().map(year => (
+                                <option key={year} value={year}>{year}</option>
+                            ))}
                         </select>
 
-                        <select className="rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                        {/* Uncomment and modify if status filtering is needed */}
+                        {/* <select 
+                            value={selectedStatus}
+                            onChange={(e) => setSelectedStatus(e.target.value)}
+                            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                        >
                             <option value="">Tất cả trạng thái</option>
                             <option value="public">Công khai</option>
                             <option value="private">Riêng tư</option>
-                        </select>
+                        </select> */}
                     </div>
                 </div>
             </div>
@@ -83,12 +139,11 @@ const Movies = () => {
                                 <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Năm</th>
                                 <th className="px-6 py-3 text-center text-sm font-medium text-gray-500">Đánh giá</th>
                                 <th className="px-6 py-3 text-center text-sm font-medium text-gray-500">Lượt xem</th>
-                                {/* <th className="px-6 py-3 text-center text-sm font-medium text-gray-500">Trạng thái</th> */}
                                 <th className="px-6 py-3 text-center text-sm font-medium text-gray-500">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                            {movies.map((movie) => (
+                            {filteredMovies.map((movie) => (
                                 <tr key={movie.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center space-x-4">
@@ -96,13 +151,16 @@ const Movies = () => {
                                             <div>
                                                 <div className="font-medium text-gray-900">{movie.title}</div>
                                                 <div className="text-sm text-gray-500">ID: #{movie.id}</div>
-                                                {/* <div className="text-sm text-blue-600">{movie.rating}</div> */}
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-500">{movie.type}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-500">{movie.duration}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-500">{movie.release_date || 2024}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-500">
+                                        {movie.type}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm text-gray-500">{movie.duration} phút</td>
+                                    <td className="px-6 py-4 text-sm text-gray-500">
+                                        {movie.release_date ? new Date(movie.release_date).getFullYear() : 2024}
+                                    </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center justify-center">
                                             <Star className="h-4 w-4 text-yellow-400" />
@@ -110,13 +168,6 @@ const Movies = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-center text-sm text-gray-500">{movie.total_views}</td>
-                                    {/* <td className="px-6 py-4">
-                                        <span
-                                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${movie.status === 'public' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}
-                                        >
-                                            {movie.status === 'public' ? 'Công khai' : 'Riêng tư'}
-                                        </span>
-                                    </td> */}
                                     <td className="px-6 py-4">
                                         <div className="flex items-center justify-center space-x-3">
                                             <Link to={`/admin/movies/${movie.id}`}>
@@ -138,9 +189,11 @@ const Movies = () => {
                     </table>
                 </div>
 
-                {/* Pagination */}
+                {/* Pagination (placeholder) */}
                 <div className="flex items-center justify-between border-t px-6 py-3">
-                    <div className="text-sm text-gray-500">Hiển thị 1-10 của 50 phim</div>
+                    <div className="text-sm text-gray-500">
+                        Hiển thị {filteredMovies.length > 0 ? '1-' + filteredMovies.length : 0} của {movies.length} phim
+                    </div>
                     <div className="flex space-x-2">
                         <button className="rounded border p-2 hover:bg-gray-50">
                             <ChevronLeft className="h-5 w-5" />

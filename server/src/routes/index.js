@@ -9,7 +9,11 @@ import routerTag from "./tag";
 import routerDashBoard from "./dashboard";
 import routerUpload from "./upload";
 import routerSubtitle from "./subtitle";
-import routerImages from "./Images";
+import routerImages from "./images";
+import routerSentencePair from "./SentencePair";
+import routerDeck from "./deck";
+import routerFlashcard from "./flashcard";
+import routerFavorite from "./favorite";
 
 const initRoutes = Router();
 
@@ -24,5 +28,9 @@ initRoutes.use("/dashboard", routerDashBoard);
 initRoutes.use("/upload", routerUpload);
 initRoutes.use("/subtitle", routerSubtitle);
 initRoutes.use("/images", routerImages);
+initRoutes.use("/sentencePair", routerSentencePair);
+initRoutes.use("/deck", routerDeck);
+initRoutes.use("/flashcard", routerFlashcard);
+initRoutes.use("/favorite", routerFavorite);
 
 export default initRoutes;

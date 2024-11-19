@@ -1,31 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Edit, Trash, PlusCircle, Search, Move } from 'lucide-react';
+import { getSentencePairsByUserId, updateSentencePair, deleteSentencePair, createSentencePair } from '~/services/sentencePair';
 
-const initialPairs = [
-    { id: 1, en: 'Hello', vi: 'Xin chào', group: 'Phim A', note: 'Lời chào đơn giản' },
-    { id: 2, en: 'How are you?', vi: 'Bạn khỏe không?', group: 'Phim B', note: '' },
-    { id: 3, en: 'You are a very opinionated person', vi: 'Bạn là người rất có chính kiến', group: 'Mặt trời', note: 'câu này sẽ học sau' },
-];
-
-const groups = ['Phim A', 'Phim B', 'Phim C'];
+const difficultyLevels = ['easy', 'medium', 'hard'];
 
 function Pairs() {
-    const [pairs, setPairs] = useState(initialPairs);
+    const id_user = JSON.parse(localStorage.getItem('user'))?.id || null;
+
+    const [pairs, setPairs] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editPair, setEditPair] = useState(null);
-    const [newPair, setNewPair] = useState({ en: '', vi: '', group: '', note: '' });
+    const [newPair, setNewPair] = useState({ english: '', vietnamese: '', diff_level: '', notes: '' });
     const [search, setSearch] = useState('');
     const [alert, setAlert] = useState({ show: false, message: '', type: '' });
     const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
     const [selectedPairForMove, setSelectedPairForMove] = useState(null);
-    const [selectedGroup, setSelectedGroup] = useState('');
+    const [selectedDifficulty, setSelectedDifficulty] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Filter pairs based on search term
+    useEffect(() => {
+        fetchPairs();
+    }, [id_user]);
+
+    const fetchPairs = async () => {
+        try {
+            if (!id_user) return;
+            setIsLoading(true);
+            const data = await getSentencePairsByUserId(id_user);
+            setPairs(data);
+        } catch (error) {
+            showAlert('Lỗi khi tải dữ liệu: ' + error.message, 'error');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const filteredPairs = pairs.filter(
         (pair) =>
-            pair.en.toLowerCase().includes(search.toLowerCase()) ||
-            pair.vi.toLowerCase().includes(search.toLowerCase()) ||
-            pair.group.toLowerCase().includes(search.toLowerCase()),
+            pair.english.toLowerCase().includes(search.toLowerCase()) ||
+            pair.vietnamese.toLowerCase().includes(search.toLowerCase()) ||
+            pair.diff_level.toLowerCase().includes(search.toLowerCase()),
     );
 
     const showAlert = (message, type = 'success') => {
@@ -33,60 +47,100 @@ function Pairs() {
         setTimeout(() => setAlert({ show: false, message: '', type: '' }), 3000);
     };
 
-    // Add new pair
-    const handleAddPair = () => {
-        if (!newPair.en || !newPair.vi || !newPair.group) {
+    // Updated Add new pair function to use createSentencePair
+    const handleAddPair = async () => {
+        if (!newPair.english || !newPair.vietnamese || !newPair.diff_level) {
             showAlert('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
             return;
         }
 
-        const newId = Math.max(...pairs.map((p) => p.id)) + 1;
-        setPairs([...pairs, { ...newPair, id: newId }]);
-        setNewPair({ en: '', vi: '', group: '', note: '' });
-        setIsModalOpen(false);
-        showAlert('Thêm cặp câu thành công');
+        try {
+            await createSentencePair({
+                ...newPair,
+                user_id: id_user,
+                status: 'saved',
+            });
+            await fetchPairs(); // Refresh the list
+            setNewPair({ english: '', vietnamese: '', diff_level: '', notes: '' });
+            setIsModalOpen(false);
+            showAlert('Thêm cặp câu thành công');
+        } catch (error) {
+            showAlert('Lỗi khi thêm cặp câu: ' + error.message, 'error');
+        }
     };
 
-    // Edit pair
-    const handleEditPair = () => {
-        if (!editPair.en || !editPair.vi || !editPair.group) {
+    const handleEditPair = async () => {
+        if (!editPair.english || !editPair.vietnamese || !editPair.diff_level) {
             showAlert('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
             return;
         }
 
-        setPairs(pairs.map((p) => (p.id === editPair.id ? editPair : p)));
-        setEditPair(null);
-        setIsModalOpen(false);
-        showAlert('Cập nhật cặp câu thành công');
+        try {
+            // Tách riêng id và data
+            const { id, ...updateData } = editPair;
+
+            console.log('ID:', id);
+            console.log('Data being sent for update:', updateData);
+
+            // Gọi API với id và data riêng biệt
+            const response = await updateSentencePair(id, updateData);
+            console.log('Update API response:', response);
+
+            if (!response) {
+                throw new Error('Không thể cập nhật dữ liệu');
+            }
+
+            await fetchPairs(); // Refresh the list
+            setEditPair(null);
+            setIsModalOpen(false);
+            showAlert('Cập nhật cặp câu thành công');
+        } catch (error) {
+            console.error('Error updating pair:', error);
+            showAlert('Lỗi khi cập nhật cặp câu: ' + error.message, 'error');
+        }
     };
 
-    // Delete pair
-    const handleDeletePair = (id) => {
+    const handleDeletePair = async (id) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa cặp câu này?')) {
-            setPairs(pairs.filter((p) => p.id !== id));
-            showAlert('Xóa cặp câu thành công');
+            try {
+                await deleteSentencePair(id);
+                await fetchPairs(); // Refresh the list
+                showAlert('Xóa cặp câu thành công');
+            } catch (error) {
+                showAlert('Lỗi khi xóa cặp câu: ' + error.message, 'error');
+            }
         }
     };
 
-    // Move pair to different group
-    const handleMovePair = () => {
-        if (!selectedGroup) {
-            showAlert('Vui lòng chọn nhóm đích', 'error');
+    const handleMovePair = async () => {
+        if (!selectedDifficulty) {
+            showAlert('Vui lòng chọn độ khó', 'error');
             return;
         }
 
-        setPairs(pairs.map((p) => (p.id === selectedPairForMove.id ? { ...p, group: selectedGroup } : p)));
-        setSelectedPairForMove(null);
-        setSelectedGroup('');
-        setIsMoveModalOpen(false);
-        showAlert('Di chuyển cặp câu thành công');
+        try {
+            await updateSentencePair({
+                ...selectedPairForMove,
+                diff_level: selectedDifficulty,
+            });
+            await fetchPairs(); // Refresh the list
+            setSelectedPairForMove(null);
+            setSelectedDifficulty('');
+            setIsMoveModalOpen(false);
+            showAlert('Thay đổi độ khó thành công');
+        } catch (error) {
+            showAlert('Lỗi khi thay đổi độ khó: ' + error.message, 'error');
+        }
     };
+
+    if (isLoading) {
+        return <div className="flex items-center justify-center pt-[65px]">Đang tải dữ liệu...</div>;
+    }
 
     return (
-        <div className="px-4 pt-[65px] sm:px-6 dark:text-white">
+        <div className="px-4 pt-[65px] dark:text-white sm:px-6">
             <h1 className="mb-6 text-2xl font-bold sm:text-3xl">Cặp câu song ngữ</h1>
 
-            {/* Alert */}
             {alert.show && (
                 <div
                     className={`mb-4 rounded-md p-4 ${alert.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}
@@ -96,7 +150,6 @@ function Pairs() {
             )}
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                {/* Add new pair button */}
                 <button
                     onClick={() => {
                         setEditPair(null);
@@ -108,7 +161,6 @@ function Pairs() {
                     Thêm cặp câu mới
                 </button>
 
-                {/* Search input */}
                 <div className="relative mb-6 max-w-full rounded-full border border-gray-500 sm:max-w-[400px] lg:block">
                     <input
                         type="text"
@@ -123,7 +175,6 @@ function Pairs() {
                 </div>
             </div>
 
-            {/* Pairs list */}
             <div className="space-y-4">
                 {filteredPairs.map((pair) => (
                     <div
@@ -131,10 +182,10 @@ function Pairs() {
                         className="flex flex-col justify-between rounded-md bg-gray-100 p-4 shadow-sm sm:flex-row sm:items-center"
                     >
                         <div>
-                            <p className="text-lg font-semibold text-gray-800">{pair.en}</p>
-                            <p className="text-gray-600">{pair.vi}</p>
-                            <p className="text-sm text-gray-400">Nhóm: {pair.group}</p>
-                            <p className="italic text-gray-500">{pair.note}</p>
+                            <p className="text-lg font-semibold text-gray-800">{pair.english}</p>
+                            <p className="text-gray-600">{pair.vietnamese}</p>
+                            <p className="text-sm text-gray-400">Độ khó: {pair.diff_level}</p>
+                            <p className="italic text-gray-500">{pair.notes}</p>
                         </div>
                         <div className="mt-3 flex gap-3 sm:mt-0">
                             <button
@@ -163,9 +214,8 @@ function Pairs() {
                 ))}
             </div>
 
-            {/* Add/Edit Modal */}
             {isModalOpen && (
-                <div className=" fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
                     <div className="w-full max-w-md rounded-lg bg-white p-6">
                         <h2 className="mb-4 text-xl font-bold">{editPair ? 'Chỉnh sửa cặp câu' : 'Thêm cặp câu mới'}</h2>
                         <div className="space-y-4">
@@ -173,48 +223,48 @@ function Pairs() {
                                 type="text"
                                 placeholder="Câu tiếng Anh *"
                                 className="w-full rounded-md border p-2"
-                                value={editPair ? editPair.en : newPair.en}
+                                value={editPair ? editPair.english : newPair.english}
                                 onChange={(e) =>
                                     editPair
-                                        ? setEditPair({ ...editPair, en: e.target.value })
-                                        : setNewPair({ ...newPair, en: e.target.value })
+                                        ? setEditPair({ ...editPair, english: e.target.value })
+                                        : setNewPair({ ...newPair, english: e.target.value })
                                 }
                             />
                             <input
                                 type="text"
                                 placeholder="Câu tiếng Việt *"
                                 className="w-full rounded-md border p-2"
-                                value={editPair ? editPair.vi : newPair.vi}
+                                value={editPair ? editPair.vietnamese : newPair.vietnamese}
                                 onChange={(e) =>
                                     editPair
-                                        ? setEditPair({ ...editPair, vi: e.target.value })
-                                        : setNewPair({ ...newPair, vi: e.target.value })
+                                        ? setEditPair({ ...editPair, vietnamese: e.target.value })
+                                        : setNewPair({ ...newPair, vietnamese: e.target.value })
                                 }
                             />
                             <select
                                 className="w-full rounded-md border p-2"
-                                value={editPair ? editPair.group : newPair.group}
+                                value={editPair ? editPair.diff_level : newPair.diff_level}
                                 onChange={(e) =>
                                     editPair
-                                        ? setEditPair({ ...editPair, group: e.target.value })
-                                        : setNewPair({ ...newPair, group: e.target.value })
+                                        ? setEditPair({ ...editPair, diff_level: e.target.value })
+                                        : setNewPair({ ...newPair, diff_level: e.target.value })
                                 }
                             >
-                                <option value="">Chọn nhóm *</option>
-                                {groups.map((group) => (
-                                    <option key={group} value={group}>
-                                        {group}
+                                <option value="">Chọn độ khó *</option>
+                                {difficultyLevels.map((level) => (
+                                    <option key={level} value={level}>
+                                        {level}
                                     </option>
                                 ))}
                             </select>
                             <textarea
                                 placeholder="Ghi chú"
                                 className="w-full rounded-md border p-2"
-                                value={editPair ? editPair.note : newPair.note}
+                                value={editPair ? editPair.notes : newPair.notes}
                                 onChange={(e) =>
                                     editPair
-                                        ? setEditPair({ ...editPair, note: e.target.value })
-                                        : setNewPair({ ...newPair, note: e.target.value })
+                                        ? setEditPair({ ...editPair, notes: e.target.value })
+                                        : setNewPair({ ...newPair, notes: e.target.value })
                                 }
                             />
                             <div className="flex gap-2">
@@ -236,23 +286,22 @@ function Pairs() {
                 </div>
             )}
 
-            {/* Move Modal */}
             {isMoveModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
                     <div className="w-full max-w-md rounded-lg bg-white p-6">
-                        <h2 className="mb-4 text-xl font-bold">Di chuyển cặp câu</h2>
+                        <h2 className="mb-4 text-xl font-bold">Thay đổi độ khó</h2>
                         <div className="space-y-4">
                             <select
                                 className="w-full rounded-md border p-2"
-                                value={selectedGroup}
-                                onChange={(e) => setSelectedGroup(e.target.value)}
+                                value={selectedDifficulty}
+                                onChange={(e) => setSelectedDifficulty(e.target.value)}
                             >
-                                <option value="">Chọn nhóm đích</option>
-                                {groups
-                                    .filter((g) => g !== selectedPairForMove?.group)
-                                    .map((group) => (
-                                        <option key={group} value={group}>
-                                            {group}
+                                <option value="">Chọn độ khó mới</option>
+                                {difficultyLevels
+                                    .filter((level) => level !== selectedPairForMove?.diff_level)
+                                    .map((level) => (
+                                        <option key={level} value={level}>
+                                            {level}
                                         </option>
                                     ))}
                             </select>
@@ -264,7 +313,7 @@ function Pairs() {
                                     Hủy
                                 </button>
                                 <button onClick={handleMovePair} className="flex-1 rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600">
-                                    Di chuyển
+                                    Thay đổi
                                 </button>
                             </div>
                         </div>

@@ -19,7 +19,7 @@ const Favorite = sequelize.define(
       onDelete: "SET NULL",
       allowNull: true,
     },
-    movies_id: {
+    movie_id: {
       type: DataTypes.INTEGER,
       references: {
         model: "movies",

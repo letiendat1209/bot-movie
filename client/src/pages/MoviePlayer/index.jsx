@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -5,14 +6,18 @@ import BilingualSubtitles from '~/components/BilingualSubtitles';
 import CustomVideoPlayerV2 from '~/components/CustomVideoPlayerV2';
 import { CustomButton, ImageWithOverlay, GenreSection, SubGroupSection, Description, TagList } from '~/Container/reusable';
 import EpisodeSidebar from '~/components/EpisodeSidebar';
+import { toast } from 'react-toastify';
 import { getEpisodeById } from '~/services/episodes';
 import { getSubtitleByEpisodeId } from '~/services/subtitle';
 import '~/styles/components/MovieDetail.css';
+import { upvoteMovie } from '~/services/movies';
+import { createFavorite } from '~/services/favorite';
 
 function MoviePlayer() {
     const [showBilingualTab, setShowBilingualTab] = useState(false);
     const [subtitles, setSubtitles] = useState(null);
     const [episode, setEpisode] = useState(null);
+    const [upvotes, setUpvotes] = useState(0); // State lưu số lượt Upvote
     const { id } = useParams();
 
     const toggleBilingualTab = () => {
@@ -39,6 +44,61 @@ function MoviePlayer() {
         }
     }, [id]);
 
+    const handleUpvote = async () => {
+        if (!episode?.data.movie_id) {
+            toast.success('Dữ liệu phim không hợp lệ!');
+            return;
+        }
+        const user_id = JSON.parse(localStorage.getItem('user'))?.id || null;
+        // Key lưu trữ thời gian upvote trong localStorage, dựa trên movie_id và user_id trong localStorage
+        const localStorageKey = `lastUpvote_${user_id}`;
+        const lastUpvote = localStorage.getItem(localStorageKey);
+        const now = new Date().getTime();
+        const fifteenHours = 15 * 60 * 60 * 1000; // 15 tiếng (millisecond)
+    
+        // Nếu đã upvote trước đó và chưa đủ 15 tiếng
+        if (lastUpvote && now - parseInt(lastUpvote, 10) < fifteenHours) {
+            const remainingTime = fifteenHours - (now - parseInt(lastUpvote, 10));
+            const hoursLeft = Math.floor(remainingTime / (60 * 60 * 1000));
+            const minutesLeft = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+            toast.error(`Bạn chỉ được upvote phim này một lần sau mỗi 15 tiếng. Hãy thử lại sau ${hoursLeft} giờ ${minutesLeft} phút.`);
+            return;
+        }
+    
+        // Nếu đủ điều kiện, thực hiện upvote
+        try {
+            const response = await upvoteMovie(episode?.data.movie_id); // Gọi API upvote
+            setUpvotes((prev) => prev + 1); // Tăng lượt upvote trong UI
+            localStorage.setItem(localStorageKey, now.toString()); // Lưu thời gian hiện tại
+            toast.success(response.message); // Thông báo thành công
+        } catch (error) {
+            console.error('Error upvoting movie:', error);
+            toast.error('Có lỗi xảy ra khi tăng lượt upvote');
+        }
+    };
+    //
+    const handleFavorite = async () => {
+        const user_id = JSON.parse(localStorage.getItem('user'))?.id || null;
+    
+        if (!user_id) {
+            toast.error('Bạn cần đăng nhập để thêm phim vào danh sách yêu thích!');
+            return;
+        }
+    
+        if (!episode?.data.movie_id) {
+            toast.error('Dữ liệu phim không hợp lệ!');
+            return;
+        }
+    
+        try {
+            const response = await createFavorite({ user_id, movie_id: episode?.data.movie_id });
+            toast.success(response.message || 'Đã thêm vào danh sách yêu thích thành công!');
+        } catch (error) {
+            console.error('Error adding to favorites:', error);
+            toast.info(error.message);
+        }
+    };
+
     const sidebarVariants = {
         initial: { opacity: 0, x: 20 },
         animate: { opacity: 1, x: 0 },
@@ -60,21 +120,20 @@ function MoviePlayer() {
                         <div className="flex gap-2">
                             <CustomButton
                                 iconClass="fas fa-heart"
-                                text="Thích 204"
+                                text={`${episode?.data.movie_upvote} lượt thích`}
                                 colorClass="bg-red-600"
-                                onClick={() => alert('Đã thích!')}
                             />
                             <CustomButton
                                 iconClass="fas fa-plus"
                                 text="Theo dõi 196"
                                 colorClass="bg-teal-700"
-                                onClick={() => alert('Đã theo dõi!')}
+                                onClick={handleFavorite}
                             />
                             <CustomButton
-                                iconClass="fas fa-share"
-                                text="Share"
+                                iconClass="fas fa-arrow-up"
+                                text={`Upvote ${episode?.data.movie_upvote}`}
                                 colorClass="bg-sky-700"
-                                onClick={() => alert('Đã chia sẻ!')}
+                                onClick={() => handleUpvote()}
                             />
 
                             <div className="ml-auto flex items-center gap-2">
@@ -108,7 +167,11 @@ function MoviePlayer() {
                         >
                             {showBilingualTab ? (
                                 subtitles ? (
-                                    <BilingualSubtitles engSubUrl={subtitles.eng_sub_url} vieSubUrl={subtitles.vie_sub_url} />
+                                    <BilingualSubtitles
+                                        engSubUrl={subtitles.eng_sub_url}
+                                        vieSubUrl={subtitles.vie_sub_url}
+                                        episodeId={id}
+                                    />
                                 ) : (
                                     <p className="mt-5 text-center text-gray-500">Chưa có bản đóng góp phụ đề song ngữ </p>
                                 )

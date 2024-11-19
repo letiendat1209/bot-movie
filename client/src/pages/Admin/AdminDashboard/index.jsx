@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { Film, Users, Play, TrendingUp, Eye, Calendar, AlertCircle, Star, Clock } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { getTotalUsers, getTotalViews } from '~/services/dashboard';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { getTotalUsers, getTotalViews } from '~/services/dashboard'; // Đảm bảo API `getAllMovies` đã được import
+import { getAllMovies } from '~/services/movies';
 
 const viewsData = [
     { name: 'T2', views: 4000 },
@@ -14,17 +15,12 @@ const viewsData = [
     { name: 'CN', views: 9000 },
 ];
 
-const topMovies = [
-    { id: '#M001', title: 'Inception', views: '125,000', rating: '4.8', category: 'Khoa học viễn tưởng' },
-    { id: '#M002', title: 'The Dark Knight', views: '98,000', rating: '4.9', category: 'Hành động' },
-    { id: '#M003', title: 'Parasite', views: '85,000', rating: '4.7', category: 'Chính kịch' },
-    { id: '#M004', title: 'Avengers: Endgame', views: '150,000', rating: '4.6', category: 'Hành động' },
-];
-
 const MovieAdminDashboard = () => {
     const [totalViews, setTotalViews] = useState();
     const [totalUsers, setTotalUsers] = useState();
+    const [topMovies, setTopMovies] = useState([]); // State để lưu danh sách phim
     useEffect(() => {
+        // Fetch tổng lượt xem
         const fetchTotalViews = async () => {
             try {
                 const response = await getTotalViews();
@@ -33,6 +29,8 @@ const MovieAdminDashboard = () => {
                 console.error('Failed to fetch total views:', error);
             }
         };
+
+        // Fetch tổng số người dùng
         const fetchTotalUsers = async () => {
             try {
                 const response = await getTotalUsers();
@@ -40,10 +38,27 @@ const MovieAdminDashboard = () => {
             } catch (error) {
                 console.error('Failed to fetch total users:', error);
             }
-        }
+        };
+
+        // Fetch danh sách top phim
+        const fetchTopMovies = async () => {
+            try {
+                const response = await getAllMovies(); // Gọi API để lấy danh sách phim
+                // lấy số lượng tổng số phim
+                const sortedMovies = response
+                    .sort((a, b) => b.total_views - a.total_views) // Sắp xếp phim theo lượt xem giảm dần
+                    .slice(0, 5); // Lấy 5 phim đầu tiên
+                setTopMovies(sortedMovies);
+            } catch (error) {
+                console.error('Failed to fetch top movies:', error);
+            }
+        };
+
         fetchTotalViews();
         fetchTotalUsers();
+        fetchTopMovies();
     }, []);
+
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             {/* Header */}
@@ -54,6 +69,7 @@ const MovieAdminDashboard = () => {
 
             {/* Stats Cards */}
             <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                {/* Card Tổng lượt xem */}
                 <div className="rounded-lg bg-white p-6 shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
@@ -67,6 +83,7 @@ const MovieAdminDashboard = () => {
                     </div>
                 </div>
 
+                {/* Card Người dùng */}
                 <div className="rounded-lg bg-white p-6 shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
@@ -79,36 +96,11 @@ const MovieAdminDashboard = () => {
                         </div>
                     </div>
                 </div>
-
-                <div className="rounded-lg bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-500">Phim mới trong tuần</p>
-                            <h3 className="mt-1 text-2xl font-bold text-gray-800">24</h3>
-                            <span className="text-sm text-green-500">+4 so với tuần trước</span>
-                        </div>
-                        <div className="rounded-full bg-purple-100 p-3">
-                            <Film className="h-6 w-6 text-purple-600" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="rounded-lg bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-500">Thời gian xem TB</p>
-                            <h3 className="mt-1 text-2xl font-bold text-gray-800">86 phút</h3>
-                            <span className="text-sm text-green-500">+12 phút so với tuần trước</span>
-                        </div>
-                        <div className="rounded-full bg-orange-100 p-3">
-                            <Clock className="h-6 w-6 text-orange-600" />
-                        </div>
-                    </div>
-                </div>
             </div>
 
             {/* Charts */}
             <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+                {/* Biểu đồ lượt xem */}
                 <div className="rounded-lg bg-white p-6 shadow-sm">
                     <h2 className="mb-4 text-xl font-semibold text-gray-800">Lượt xem theo ngày</h2>
                     <div className="h-80">
@@ -131,7 +123,7 @@ const MovieAdminDashboard = () => {
                         <table className="min-w-full">
                             <thead>
                                 <tr className="text-sm text-gray-500">
-                                    <th className="py-3 text-left">ID</th>
+                                    <th className="px-2 py-3 text-left">ID</th>
                                     <th className="py-3 text-left">Tên phim</th>
                                     <th className="py-3 text-left">Thể loại</th>
                                     <th className="py-3 text-center">Đánh giá</th>
@@ -141,16 +133,16 @@ const MovieAdminDashboard = () => {
                             <tbody>
                                 {topMovies.map((movie) => (
                                     <tr key={movie.id} className="border-t border-gray-100">
-                                        <td className="py-3 text-blue-600">{movie.id}</td>
+                                        <td className="px-2 py-3 text-blue-600">{movie.id}</td>
                                         <td className="py-3 font-medium">{movie.title}</td>
-                                        <td className="py-3 text-gray-500">{movie.category}</td>
+                                        <td className="py-3 text-gray-500">{movie.type}</td>
                                         <td className="py-3 text-center">
                                             <span className="flex items-center justify-center">
                                                 <Star className="mr-1 inline h-4 w-4 text-yellow-400" />
                                                 {movie.rating}
                                             </span>
                                         </td>
-                                        <td className="py-3 text-right">{movie.views}</td>
+                                        <td className="py-3 text-right">{movie.total_views.toLocaleString()}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -167,8 +159,10 @@ const MovieAdminDashboard = () => {
                             <Calendar className="h-6 w-6 text-yellow-600" />
                         </div>
                         <div>
-                            <h3 className="font-semibold text-gray-800">Phim sắp chiếu</h3>
-                            <p className="mt-1 text-gray-500">15 phim trong tuần tới</p>
+                            <h3 className="font-semibold text-gray-800">Tổng số phim</h3>
+                            <p className="mt-1 text-gray-500">
+                                {topMovies.length} phim
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -179,7 +173,7 @@ const MovieAdminDashboard = () => {
                             <AlertCircle className="h-6 w-6 text-red-600" />
                         </div>
                         <div>
-                            <h3 className="font-semibold text-gray-800">Báo cáo vi phạm</h3>
+                            <h3 className="font-semibold text-gray-800">Tổng số quản trị</h3>
                             <p className="mt-1 text-gray-500">8 báo cáo cần xử lý</p>
                         </div>
                     </div>

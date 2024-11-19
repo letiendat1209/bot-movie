@@ -3,14 +3,17 @@ import '~/styles/components/BilingualSubtitles.css';
 import { useState, useEffect, useRef } from 'react';
 import { Save, X } from 'lucide-react';
 import { parseSrtFile } from '~/utils/srtParser';
+import { createSentencePair } from '~/services/sentencePair';
 
-const BilingualSubtitles = ({ engSubUrl, vieSubUrl }) => {
+const BilingualSubtitles = ({ engSubUrl, vieSubUrl, episodeId }) => {
+    const id_user = JSON.parse(localStorage.getItem('user'))?.id || null;
     const [engSubtitles, setEngSubtitles] = useState([]);
     const [vieSubtitles, setVieSubtitles] = useState([]);
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentSubtitle, setCurrentSubtitle] = useState({ en: '', vi: '' });
     const [rowHeights, setRowHeights] = useState({});
+    const [saving, setSaving] = useState(false); // Track save status
 
     const engRefs = useRef([]);
     const vieRefs = useRef([]);
@@ -62,8 +65,33 @@ const BilingualSubtitles = ({ engSubUrl, vieSubUrl }) => {
             vi: vieSub.text,
         });
         setIsModalOpen(true);
+        console.log(engSub, vieSub);
     };
 
+    const handleSaveToAPI = async () => {
+        const payload = {
+            user_id: id_user,
+            episode_id: episodeId,
+            english: currentSubtitle.en,
+            vietnamese: currentSubtitle.vi,
+            notes: '',
+            diff_level: 'medium',
+            tags: '',
+            status: 'saved',
+        };
+
+        setSaving(true);
+        try {
+            await createSentencePair(payload);
+            alert('Subtitle saved successfully!');
+        } catch (error) {
+            console.error('Error saving subtitle:', error);
+            alert('Failed to save subtitle.');
+        } finally {
+            setSaving(false);
+            setIsModalOpen(false);
+        }
+    };
     const SaveModal = () =>
         isModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -94,12 +122,13 @@ const BilingualSubtitles = ({ engSubUrl, vieSubUrl }) => {
                             Hủy
                         </button>
                         <button
-                            onClick={() => {
-                                setIsModalOpen(false);
-                            }}
-                            className="rounded-full bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
+                            onClick={handleSaveToAPI}
+                            className={`rounded-full px-4 py-2 text-white transition-colors ${
+                                saving ? 'bg-gray-500' : 'bg-red-600 hover:bg-red-700'
+                            }`}
+                            disabled={saving}
                         >
-                            Lưu
+                            {saving ? 'Đang lưu...' : 'Lưu'}
                         </button>
                     </div>
                 </div>
@@ -132,11 +161,7 @@ const BilingualSubtitles = ({ engSubUrl, vieSubUrl }) => {
                                         </div>
                                     )}
                                 </div>
-                                <p 
-                                    ref={el => engRefs.current[index] = el}
-                                    className="text-sm"
-                                    style={{ minHeight: rowHeights[index] }}
-                                >
+                                <p ref={(el) => (engRefs.current[index] = el)} className="text-sm" style={{ minHeight: rowHeights[index] }}>
                                     {sub.text}
                                 </p>
                             </div>
@@ -163,11 +188,7 @@ const BilingualSubtitles = ({ engSubUrl, vieSubUrl }) => {
                                         </div>
                                     )}
                                 </div>
-                                <p 
-                                    ref={el => vieRefs.current[index] = el}
-                                    className="text-sm"
-                                    style={{ minHeight: rowHeights[index] }}
-                                >
+                                <p ref={(el) => (vieRefs.current[index] = el)} className="text-sm" style={{ minHeight: rowHeights[index] }}>
                                     {sub.text}
                                 </p>
                             </div>

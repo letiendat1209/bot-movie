@@ -41,16 +41,16 @@ export default function Sidebar() {
         {
             section: 'SITE SETTINGS',
             items: [
-                { title: 'Ad Management', icon: DollarSign, link: '/ads' },
-                { title: 'Subscription Plans', icon: Package, link: '/subscriptions' },
-                { title: 'Payments', icon: CreditCard, link: '/payments' },
+                { title: 'Ad Management', icon: DollarSign, link: '/admin/adminDashboard' },
+                { title: 'Subscription Plans', icon: Package, link: '/admin/adminDashboard' },
+                { title: 'Payments', icon: CreditCard, link: '/admin/adminDashboard' },
             ],
         },
         {
             section: 'ANALYTICS',
             items: [
-                { title: 'View Reports', icon: BarChart, link: '/reports' },
-                { title: 'Traffic Statistics', icon: PieChart, link: '/traffic' },
+                { title: 'View Reports', icon: BarChart, link: '/admin/adminDashboard' },
+                { title: 'Traffic Statistics', icon: PieChart, link: '/admin/adminDashboard' },
             ],
         },
         {

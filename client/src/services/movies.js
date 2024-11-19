@@ -58,3 +58,12 @@ export const createMovies = async (data) => {
         throw error.response ? error.response.data : { message: "Failed to create movie." };
     }
 }
+// API tăng upvoteMovie
+export const upvoteMovie = async (idMovie) => {
+    try {
+        const response = await axios.put(`${API_URL}/movies/${idMovie}/upvote`);
+        return response.data;
+    } catch (error) {
+        throw error.response ? error.response.data : { message: "Failed to upvote movie." };
+    }
+}
